@@ -21,18 +21,18 @@ public class CorpusReader {
         return tokens;
     }
 
-    private List<String> englishStem(List<String> my_tokens) {
+    private List<String> englishStem(List<String> words) {
 
-        for(int i = 0 ; i < my_tokens.size(); i++) {
-            this.stemmer.setCurrent(my_tokens.get(i));
+        for(int i = 0 ; i < words.size(); i++) {
+            this.stemmer.setCurrent(words.get(i));
             this.stemmer.stem();
-            my_tokens.set(i, stemmer.getCurrent()) ;
+            words.set(i, stemmer.getCurrent()) ;
         }
 
-        return my_tokens;
+        return words;
     }
 
-    private Set<String> readStopWordsEnglish() {
+    private Set<String> loadStopWordsEnglish() {
 
         Set<String> stop_words = new HashSet<>();
         String path_file = "src/snowball_stopwords_EN.txt";
@@ -71,7 +71,7 @@ public class CorpusReader {
 
             reader.readNext(); // remove first line
 
-            while ((columns = reader.readNext()) != null && counter < 10) {
+            while ((columns = reader.readNext()) != null && counter<10) {
                 this.documents.put(columns[0], columns[2] + " " + columns[7]);
                 counter++;
             }
@@ -95,20 +95,19 @@ public class CorpusReader {
         // stopwords
         // snowball
         int id_document = 0;
-        Set<String> stop_words = this.readStopWordsEnglish();
-        List<String> my_tokens = new ArrayList<>();
+        Set<String> stop_words = this.loadStopWordsEnglish();
+        List<String> words = new ArrayList<>();
 
         for (String key: this.documents.keySet()){
             String[] clean_words = this.cleanData(key);
 
-            my_tokens.addAll(Arrays.asList(clean_words));
-            my_tokens.removeIf(stop_words::contains); // remove stop_words from tokens
+            words.addAll(Arrays.asList(clean_words));
+            words.removeIf(stop_words::contains); // remove stop_words from tokens
 
-            this.tokens.put(id_document, englishStem(my_tokens).toArray(new String[0])); // clean stem
+            this.tokens.put(id_document, englishStem(words).toArray(new String[0])); // clean stem
 
             id_document++;
-            my_tokens.clear();
-
+            words.clear();
         }
     }
 
