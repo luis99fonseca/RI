@@ -9,6 +9,7 @@ public class Tokenizer {
     private Map<String, String> documents = new HashMap<>();
     private final englishStemmer stemmer = new englishStemmer();
     private final Map<Integer, String[]> tokens = new TreeMap<>();
+    static int id_document = 0;
 
     public Tokenizer(Map<String, String> documents){
         this.documents = documents;
@@ -55,7 +56,6 @@ public class Tokenizer {
     };
 
     public void simpleTokenizer() {
-        int id_document = 0;
 
         for (String key : this.documents.keySet()) {
             String[] clean_words = this.cleanData(key);
@@ -67,7 +67,6 @@ public class Tokenizer {
     public void improvedTokenizer() {
         // stopwords
         // snowball
-        int id_document = 0;
         Set<String> stop_words = this.loadStopWordsEnglish();
         List<String> words = new ArrayList<>();
 
