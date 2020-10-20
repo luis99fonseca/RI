@@ -11,7 +11,6 @@ public class CorpusReader {
 
     private final Map<String, String> documents = new HashMap<>();
 
-
     public Map<String, String> getDocuments() {
         return documents;
     }
@@ -22,7 +21,7 @@ public class CorpusReader {
         try {
             reader = new CSVReader(new FileReader(csv_file));
             String[] columns;
-            int counter = 0; // only for test
+            int counter = 0; //TODO: remove later - only for test
 
             reader.readNext(); // remove first line
 

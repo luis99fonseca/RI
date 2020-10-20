@@ -1,5 +1,3 @@
-import org.tartarus.snowball.ext.englishStemmer;
-
 import java.util.Arrays;
 import java.util.Map;
 
@@ -7,16 +5,16 @@ public class App {
     public static void main(String[] args) {
 
         final long startTime = System.nanoTime();
-        String csv_file = "src/all_sources_metadata_2020-03-13.csv";
+        String csv_file = "../data/all_sources_metadata_2020-03-13.csv";
         CorpusReader my_reader = new CorpusReader();
 
         my_reader.loadDataCSV(csv_file);
 
-        Tokenizer my_tokenizer = new Tokenizer(my_reader.getDocuments());
+        ATokenizer my_tokenizer = new ATokenizer(my_reader.getDocuments());
 
         //choice tokenizer
-        my_tokenizer.improvedTokenizer();
-        //my_tokenizer.simpleTokenizer();
+//        my_tokenizer.improvedTokenizer();
+        my_tokenizer.simpleTokenizer();
 
         Map<Integer, String[]> data = my_tokenizer.getTokens();
 
