@@ -1,33 +1,32 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Indexer {
 
 //    documents
-    private Map<String, String> documents = new HashMap<>();
-    public static int id_document = 0;
+    private Map<Integer, String> documents = new HashMap<Integer, String>();
+    //public static int id_document = 0;
 //    tokenizer
     private Tokenizer tokenizer;
 
-//    index
-    private final Map<Integer, String[]> inverted_index = new TreeMap<>();
+    private final Map<String, Set<Integer>> inverted_index2 = new TreeMap<>();
 
-    public Indexer(Map<String, String> documents, Tokenizer tokenizer) {
+    public Indexer(Map<Integer, String> documents, Tokenizer tokenizer) {
         this.documents = documents;
         this.tokenizer = tokenizer;
     }
 
-    public Map<Integer, String[]> process_index(){
-        for (String key : this.documents.keySet()) {
-            String[] clean_words = this.tokenizer.process_tokens(documents.get(key));
-            this.inverted_index.put(id_document, clean_words);
-            id_document++;
+    public Map<String, Set<Integer>> process_index(){
+        for (Integer doc_id : this.documents.keySet()) {
+            for(String token : this.tokenizer.process_tokens(documents.get(doc_id))){
+                inverted_index2.computeIfAbsent(token, k -> new TreeSet<>());
+                inverted_index2.get(token).add(doc_id);
+            }
+
         }
-        return inverted_index;
+        return inverted_index2;
     }
 
-    public void setDocuments(Map<String, String> documents) {
+    public void setDocuments(Map<Integer, String> documents) {
         this.documents = documents;
     }
 }

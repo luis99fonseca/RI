@@ -1,25 +1,40 @@
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
+/*
+Run as follows:
+    - compile:
+        mvn compile
+    - run:
+        mvn exec:java -Dexec.args=""
+ */
 public class App {
     public static void main(String[] args) {
 
         final long startTime = System.nanoTime();
+        System.out.println(">>> " + Arrays.toString(args));
+
         String csv_file = "../data/all_sources_metadata_2020-03-13.csv";
-        CorpusReader my_reader = new CorpusReader();
+        String stop_words_file = "src/snowball_stopwords_EN.txt";
+        if (args.length == 2){
+            csv_file = args[0];
+            stop_words_file = args[1];
+        }
 
-        my_reader.loadDataCSV(csv_file);
+        CorpusReader corpusReader = new CorpusReader();
+        Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
+//        Tokenizer tokenizer = new SimpleTokenizer();
+        Indexer indexer;
 
-        ATokenizer my_tokenizer = new ATokenizer(my_reader.getDocuments());
+        corpusReader.loadDataCSV(csv_file);
 
-        //choice tokenizer
-//        my_tokenizer.improvedTokenizer();
-        my_tokenizer.simpleTokenizer();
+        indexer = new Indexer(corpusReader.getDocuments(), tokenizer);
 
-        Map<Integer, String[]> data = my_tokenizer.getTokens();
+        Map<String, Set<Integer>> index = indexer.process_index();
 
-        for (int key: data.keySet()){
-            System.out.println(key + " -> " + Arrays.toString(data.get(key)));
+        for (String key: index.keySet()){
+            System.out.println(key + " -> " + index.get(key));
         }
 
         final long endTime = System.nanoTime();

@@ -75,3 +75,4 @@ all_sources_metadata_2020-03-13.csv
 # Not Automated
 data/
 target/
+.idea/
