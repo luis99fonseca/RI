@@ -23,7 +23,7 @@ public class CorpusReader {
 
             reader.readNext(); // remove first line
 
-            while ((columns = reader.readNext()) != null && id_document<10) {             //TODO: remove later - only for test
+            while ((columns = reader.readNext()) != null) {             //TODO: remove later - only for test
                 this.documents.put(id_document, columns[2] + " " + columns[7]);
                 id_document++;
             }
