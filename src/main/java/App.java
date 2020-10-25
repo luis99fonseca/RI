@@ -1,3 +1,4 @@
+import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -15,16 +16,17 @@ public class App {
         final long startTime = System.nanoTime();
         System.out.println(">>> " + Arrays.toString(args));
 
-        String csv_file = "../data/all_sources_metadata_2020-03-13.csv";
+        String csv_file = "src/all_sources_metadata_2020-03-13.csv";
         String stop_words_file = "src/snowball_stopwords_EN.txt";
-        if (args.length == 2){
+
+        if (args.length == 2) {
             csv_file = args[0];
             stop_words_file = args[1];
         }
 
         CorpusReader corpusReader = new CorpusReader();
-        Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
-//        Tokenizer tokenizer = new SimpleTokenizer();
+        //Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
+        Tokenizer tokenizer = new SimpleTokenizer();
         Indexer indexer;
 
         corpusReader.loadDataCSV(csv_file);
@@ -33,12 +35,15 @@ public class App {
 
         Map<String, Set<Integer>> index = indexer.process_index();
 
-        for (String key: index.keySet()){
-            System.out.println(key + " -> " + index.get(key));
+        for (String key : index.keySet()) {
+            System.out.println(key + "-> " + index.get(key));
         }
 
         final long endTime = System.nanoTime();
         System.out.println("Time: " + (endTime - startTime));
 
+
     }
 }
+
+

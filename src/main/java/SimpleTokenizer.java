@@ -4,9 +4,10 @@ public class SimpleTokenizer implements Tokenizer {
 
     @Override
     public String[] process_tokens(String corpus) {
-        return corpus.replaceAll("[^A-Za-z]", " ")   // remove non-alphabetic chars
-                .replaceAll("\\b\\w{1,3}\\b\\s?", "")   // remove words less 3 chars
-                .toLowerCase()                                              // lowercase
-                .split("\\s+");                                     // split whitespaces
+        return corpus.replaceAll("[^a-zA-Z]", " ")      // remove non-alphabetic chars
+                .replaceAll("\\b\\w{1,2}\\b\\s?", "")   // remove words less 3 chars
+                .trim()
+                .toLowerCase()                                           // lowercase
+                .split("\\s+");                                    // split whitespaces
     }
 }
