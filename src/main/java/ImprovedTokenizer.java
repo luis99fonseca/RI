@@ -6,11 +6,14 @@ import java.util.*;
 
 public class ImprovedTokenizer implements Tokenizer {
 
-    private Tokenizer simpleTokenizer = new SimpleTokenizer();
     private englishStemmer stemmer = new englishStemmer();
     private Set<String> stop_words;
 
-    // TODO: maybe passar uma class StopWords?
+    /*
+    when create instantiation of this class
+    loads stop words from file passed in command line or use default file
+    for Set to guarantee unique entries.
+     */
     public ImprovedTokenizer(String stop_words_file) {
         stop_words = new HashSet<>();
         this.read_stop_words_file(stop_words_file);
@@ -30,14 +33,17 @@ public class ImprovedTokenizer implements Tokenizer {
         }
     }
 
+
     @Override
     public String[] process_tokens(String corpus) {
-        String[] array_tokens = simpleTokenizer.process_tokens(corpus);
+        String[] array_tokens = corpus.replaceAll("[^a-zA-Z0-9]", " ")           // only alphanumeric chars
+                                        .replaceAll("\\b\\w{1,3}\\b\\s?", "")    // remove words less 3 chars
+                                        .trim()                                                   // remove possible invisible chars created
+                                        .toLowerCase()                                           // lowercase
+                                        .split("\\s+");                                     // split one or more whitespaces
 
-        // TODO: not sure if the next block should be from classes of their own
-        List<String> list_tokens = new ArrayList<>();
 
-        list_tokens.addAll(Arrays.asList(array_tokens));
+        List<String> list_tokens = new ArrayList<>(Arrays.asList(array_tokens));
         list_tokens.removeIf(this.stop_words::contains);    // remove stop_words from tokens
 
         list_tokens = this.stem_english_words(list_tokens); // clean stem
@@ -45,6 +51,10 @@ public class ImprovedTokenizer implements Tokenizer {
         return list_tokens.toArray(new String[0]);
     }
 
+    /*
+    Use suggested stemming to transform the word in a common "stem".
+    For example transform connection, connected, connecting  to connect.
+     */
     private List<String> stem_english_words(List<String> list) {
 
         for(int i = 0 ; i < list.size(); i++) {

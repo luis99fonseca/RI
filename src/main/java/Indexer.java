@@ -1,7 +1,9 @@
+import java.lang.instrument.Instrumentation;
 import java.util.*;
 
 public class Indexer {
 
+    private static Instrumentation instrumentation;
 
     private Map<Integer, String> documents;
 
@@ -14,6 +16,11 @@ public class Indexer {
         this.tokenizer = tokenizer;
     }
 
+    /*
+    Given the documents and theirs tokens creates
+    inverted index as follows:
+        token -> [ document1_id, document2_id, ... ]
+     */
     public Map<String, Set<Integer>> process_index(){
 
         for (Integer doc_id : this.documents.keySet()) {
@@ -24,6 +31,7 @@ public class Indexer {
                 }
             }
         }
+
         return inverted_index;
     }
 

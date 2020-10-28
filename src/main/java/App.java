@@ -1,23 +1,35 @@
+import com.sun.source.tree.Tree;
+
 import javax.swing.plaf.synth.SynthOptionPaneUI;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+import static java.util.Comparator.comparingInt;
+import static java.util.stream.Collectors.toMap;
 
 /*
 Run as follows:
     - compile:
         mvn compile
     - run:
-        mvn exec:java -Dexec.args=""
+        mvn exec:java -Dexec.args="data/all_sources_metadata_2020-03-13.csv data/snowball_stopwords_EN.txt"
  */
+
 public class App {
-    public static void main(String[] args) {
 
-        final long startTime = System.nanoTime();
-        System.out.println(">>> " + Arrays.toString(args));
+    public static void main(String[] args) throws IOException {
+        /*
+        Program can receive 2 args, in that order:
+            - path of data set file
+            - path of stop words file
+         If user didnt put nothing, the program use default files
+         */
 
-        String csv_file = "src/all_sources_metadata_2020-03-13.csv";
-        String stop_words_file = "src/snowball_stopwords_EN.txt";
+        String csv_file = "data/all_sources_metadata_2020-03-13.csv";
+        String stop_words_file = "data/snowball_stopwords_EN.txt";
 
         if (args.length == 2) {
             csv_file = args[0];
@@ -25,7 +37,9 @@ public class App {
         }
 
         CorpusReader corpusReader = new CorpusReader();
-        //Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
+
+        // can choose their tokenizer
+        // Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
         Tokenizer tokenizer = new SimpleTokenizer();
         Indexer indexer;
 
@@ -33,14 +47,49 @@ public class App {
 
         indexer = new Indexer(corpusReader.getDocuments(), tokenizer);
 
-        Map<String, Set<Integer>> index = indexer.process_index();
 
-        for (String key : index.keySet()) {
-            System.out.println(key + "-> " + index.get(key));
-        }
-
+        // indexing
+        final long startTime = System.nanoTime();
+        Map<String, Set<Integer>> inverted_index = indexer.process_index();
         final long endTime = System.nanoTime();
-        System.out.println("Time: " + (endTime - startTime));
+
+
+        //ByteArrayOutputStream baos=new ByteArrayOutputStream();
+        //ObjectOutputStream oos=new ObjectOutputStream(baos);
+        //oos.writeObject(inverted_index);
+        //oos.close();
+        //System.out.println("Data Size: " + baos.size() );
+
+
+       System.out.println("a) Time to indexing: " + (endTime - startTime));
+       System.out.println("b) Vocabulary size: " + inverted_index.size());
+
+
+       /*
+       This code is only to answer the questions.
+       As it's not efficient.
+        */
+
+       //int i = 0;
+       //System.out.println("c)");
+       //for(String token: inverted_index.keySet()){
+       //     if(inverted_index.get(token).size() == 1){
+       //         System.out.println(token + " : " + inverted_index.get(token));
+       //         i++;
+       //     }
+       //     if(i>10)
+       //         break;
+       //}
+
+        //Map<String, Integer> freq = new TreeMap<>();
+//
+        //for(String x : inverted_index.keySet())
+        //    freq.put(x, inverted_index.get(x).size());
+//
+        //freq.entrySet()
+        //        .stream()
+        //        .sorted(Map.Entry.comparingByValue())
+        //        .forEach(System.out::println);
 
 
     }

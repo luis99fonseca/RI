@@ -1,0 +1,66 @@
+André Alves  89334
+Luís Fonseca 89066
+
+4.
+     a) Simple Tokenizer:
+            - À volta de 5.4 segundos a executar.
+            -
+
+        Improved Tokenizer
+            - À volta de 8.7 segundos a executar.
+            -
+
+     b) Simple Tokenizer: 60502
+        Improved Tokenizer: 51340
+
+    c) Simple Tokenizer:
+        aaaaaag : [27658]
+        aaaauga : [27530]
+        aaac : [26811]
+        aaag : [2401]
+        aaap : [23507]
+        aaars : [23851]
+        aabb : [13920]
+        aacaaaaaaggg : [27080]
+        aacetaminophen : [7027]
+        aacgaa : [21112]
+        aacuaaa : [22766]
+
+       Improved Tokenizer:
+        aaaaaag : [27658]
+        aaaauga : [27530]
+        aaac : [26811]
+        aaag : [2401]
+        aaap : [23507]
+        aaars : [23851]
+        aabb : [13920]
+        aacaaaaaaggg : [27080]
+        aacetaminophen : [7027]
+        aacgaa : [21112]
+        aacuaaa : [22766]
+
+    d) Simple Tokenizer:
+
+        were=13492
+        are=13767
+        was=14104
+        from=15206
+        this=16278
+        that=19749
+        with=21021
+        for=21314
+        and=26550
+        the=26808
+
+    Improved Tokenizer:
+
+        protein = 8125
+        human = 8512
+        viral = 9412
+        cell = 9537
+        diseas = 9645
+        use = 11742
+        result = 11921
+        studi = 12435
+        infect = 13879
+        virus = 14485
