@@ -10,9 +10,9 @@ public class ImprovedTokenizer implements Tokenizer {
     private Set<String> stop_words;
 
     /*
-    when create instantiation of this class
-    loads stop words from file passed in command line or use default file
-    for Set to guarantee unique entries.
+    When this class is instantiated, 
+    it loads stop words from the file passed (in command line or use default file) 
+    to a Set looking to guarantee unique entries.
      */
     public ImprovedTokenizer(String stop_words_file) {
         stop_words = new HashSet<>();
@@ -38,9 +38,9 @@ public class ImprovedTokenizer implements Tokenizer {
     public String[] process_tokens(String corpus) {
         String[] array_tokens = corpus.replaceAll("[^a-zA-Z0-9]", " ")           // only alphanumeric chars
                                         .replaceAll("\\b\\w{1,3}\\b\\s?", "")    // remove words less 3 chars
-                                        .trim()                                                   // remove possible invisible chars created
-                                        .toLowerCase()                                           // lowercase
-                                        .split("\\s+");                                     // split one or more whitespaces
+                                        .trim()                                  // remove possible invisible chars created
+                                        .toLowerCase()                           // lowercase
+                                        .split("\\s+");                          // split one or more whitespaces
 
 
         List<String> list_tokens = new ArrayList<>(Arrays.asList(array_tokens));
@@ -53,7 +53,7 @@ public class ImprovedTokenizer implements Tokenizer {
 
     /*
     Use suggested stemming to transform the word in a common "stem".
-    For example transform connection, connected, connecting  to connect.
+    Example: convert connection, connected, connecting  into connect.
      */
     private List<String> stem_english_words(List<String> list) {
 
