@@ -6,6 +6,7 @@ public class Indexer {
     private static Instrumentation instrumentation;
 
     private Map<Integer, String> documents;
+    private CorpusReader corpusReader;
 
     private Tokenizer tokenizer;
 
@@ -16,6 +17,11 @@ public class Indexer {
         this.tokenizer = tokenizer;
     }
 
+    public Indexer(CorpusReader corpusReader, Tokenizer tokenizer) {
+        this.corpusReader = corpusReader;
+        this.tokenizer = tokenizer;
+    }
+
     /*
     Given the documents and their tokens
     create inverted index as follows: 
@@ -23,11 +29,22 @@ public class Indexer {
      */
     public Map<String, Set<Integer>> process_index(){
 
-        for (Integer doc_id : this.documents.keySet()) {
-            for(String token : this.tokenizer.process_tokens(documents.get(doc_id))){
-                if(!token.isEmpty()){
-                    inverted_index.computeIfAbsent(token, k -> new TreeSet<>());
-                    inverted_index.get(token).add(doc_id);
+//        for (Integer doc_id : this.documents.keySet()) {
+//            for(String token : this.tokenizer.process_tokens(documents.get(doc_id))){
+//                if(!token.isEmpty()){
+//                    inverted_index.computeIfAbsent(token, k -> new TreeSet<>());
+//                    inverted_index.get(token).add(doc_id);
+//                }
+//            }
+//        }
+        Map<Integer, String> index; // TODO: change name alter
+        while ( !(index = this.corpusReader.readBlock()).isEmpty() ) {
+            for (Integer doc_id : index.keySet()) {
+                for (String token : this.tokenizer.process_tokens(index.get(doc_id))) {
+                    if (!token.isEmpty()) {
+                        inverted_index.computeIfAbsent(token, k -> new TreeSet<>());
+                        inverted_index.get(token).add(doc_id);
+                    }
                 }
             }
         }
