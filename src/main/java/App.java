@@ -31,8 +31,8 @@ public class App {
         CorpusReader corpusReader = new CorpusReader(csv_file);
 
         // (Un)comment to choose Tokenizer
-        // Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
-        Tokenizer tokenizer = new SimpleTokenizer();
+        Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
+        //Tokenizer tokenizer = new SimpleTokenizer();
         Indexer indexer;
 
 //        corpusReader.loadDataCSV(csv_file);
@@ -56,26 +56,26 @@ public class App {
         System.out.println("b) Vocabulary size: " + inverted_index.size());
 
 
-//       int i = 0;
-//       System.out.println("c)");
-//       for(String token: inverted_index.keySet()){
-//            if(inverted_index.get(token).size() == 1){
-//                System.out.println(token + " : " + inverted_index.get(token));
-//                i++;
-//            }
-//            if(i>10)
-//                break;
-//       }
+       //int i = 0;
+       //System.out.println("c)");
+       //for(String token: inverted_index.keySet()){
+       //     if(inverted_index.get(token).size() == 1){
+       //         System.out.println(token + " : " + inverted_index.get(token));
+       //         i++;
+       //     }
+       //     if(i>10)
+       //         break;
+       //}
+
+        //Map<String, Integer> freq = new TreeMap<>();
 //
-//        Map<String, Integer> freq = new TreeMap<>();
+        //for(String x : inverted_index.keySet())
+        //    freq.put(x, inverted_index.get(x).size());
 //
-//        for(String x : inverted_index.keySet())
-//            freq.put(x, inverted_index.get(x).size());
-//
-//        freq.entrySet()
-//                .stream()
-//                .sorted(Map.Entry.comparingByValue())
-//                .forEach(System.out::println);
+        //freq.entrySet()
+        //        .stream()
+        //        .sorted(Map.Entry.comparingByValue())
+        //        .forEach(System.out::println);
 
 
     }
