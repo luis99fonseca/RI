@@ -22,10 +22,10 @@ public class App {
 
     public static void main(String[] args) throws IOException {
         /*
-        Program can receive 2 args, in that order:
+        Application may receive exactly 2 arguments, in the order that follows:
             - path of data set file
             - path of stop words file
-         If user didnt put nothing, the program use default files
+        Default files are used if no input is given.
          */
 
         String csv_file = "data/all_sources_metadata_2020-03-13.csv";
@@ -38,7 +38,7 @@ public class App {
 
         CorpusReader corpusReader = new CorpusReader();
 
-        // can choose their tokenizer
+        // (Un)comment to choose Tokenizer
         // Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
         Tokenizer tokenizer = new SimpleTokenizer();
         Indexer indexer;
@@ -66,8 +66,8 @@ public class App {
 
 
        /*
-       This code is only to answer the questions.
-       As it's not efficient.
+       This code is used merely to answer the questions.
+       Therefore efficiency was not taken into account.
         */
 
        //int i = 0;
