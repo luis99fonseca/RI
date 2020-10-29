@@ -1,6 +1,7 @@
 André Alves  89334
 Luís Fonseca 89066
 
+Nota: Como explicado ao professor, o CSVReader está aparentemente a saltar linhas sem razão aparente.
 4.
      a)
      Tendo em conta que lê-se o ficheiro em blocos de 5 mil linhas.
@@ -11,6 +12,7 @@ Luís Fonseca 89066
         Improved Tokenizer
             - À volta de 9.2 segundos a executar.
             - 500 Mb
+        Relativamente à memória cremos que é bastante menos do que aqui escrito, mas não encontramos uma maneira fiável de avaliar.
 
      b) Simple Tokenizer: 60103
         Improved Tokenizer: 51022
