@@ -2,16 +2,18 @@ André Alves  89334
 Luís Fonseca 89066
 
 4.
-     a) Simple Tokenizer:
-            - À volta de 5.4 segundos a executar.
-            -
+     a)
+     Tendo em conta que lê-se o ficheiro em blocos de 5 mil linhas.
+     Simple Tokenizer:
+            - À volta de 6 segundos a executar.
+            - 500 Mb
 
         Improved Tokenizer
-            - À volta de 8.7 segundos a executar.
-            -
+            - À volta de 9.2 segundos a executar.
+            - 500 Mb
 
-     b) Simple Tokenizer: 60502
-        Improved Tokenizer: 51340
+     b) Simple Tokenizer: 60103
+        Improved Tokenizer: 51022
 
     c) Simple Tokenizer:
         aaaaaag : [27658]
@@ -27,40 +29,40 @@ Luís Fonseca 89066
         aacuaaa : [22766]
 
        Improved Tokenizer:
-        aaaaaag : [27658]
-        aaaauga : [27530]
-        aaac : [26811]
-        aaag : [2401]
-        aaap : [23507]
-        aaars : [23851]
-        aabb : [13920]
-        aacaaaaaaggg : [27080]
-        aacetaminophen : [7027]
-        aacgaa : [21112]
-        aacuaaa : [22766]
+        0000 : [15231]
+        0000005 : [1184]
+        0000011 : [5054]
+        000045 : [20891]
+        000055 : [5054]
+        0002755 : [7063]
+        00046 : [3367]
+        00056 : [3093]
+        00058367 : [12501]
+        0007 : [17703]
+        00070 : [6917]
 
     d) Simple Tokenizer:
 
-        were=13492
-        are=13767
-        was=14104
-        from=15206
-        this=16278
-        that=19749
-        with=21021
-        for=21314
-        and=26550
-        the=26808
+        were=13489
+        are=13730
+        was=14098
+        from=14974
+        this=16179
+        that=19732
+        with=20862
+        for=20953
+        and=25862
+        the=25943
 
     Improved Tokenizer:
 
-        protein = 8125
-        human = 8512
-        viral = 9412
-        cell = 9537
-        diseas = 9645
-        use = 11742
-        result = 11921
-        studi = 12435
-        infect = 13879
-        virus = 14485
+        protein=8084
+        human=8429
+        viral=9332
+        diseas=9407
+        cell=9500
+        use=11718
+        result=11917
+        studi=12404
+        infect=13663
+        virus=14259
