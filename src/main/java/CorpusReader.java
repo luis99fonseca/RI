@@ -9,9 +9,9 @@ public class CorpusReader {
     private final Map<Integer, String> documents = new HashMap<>();
 
     /*
-     When read the records of data set
-     it creates new documents with unique id.
-     Being static guarantees that there won't be repeated ids between different instantiations
+    For each document in the dataset,
+     it creates a new entry with a unique id.
+    Being static guarantees that there won't be repeated ids between different instantiations
     */
     public static int id_document = 0;
 
@@ -31,7 +31,7 @@ public class CorpusReader {
 
             while ((columns = reader.readNext()) != null) {
 
-                // columns[2] -> title  columns[7] -> abstract   separate by whitespace
+                // columns[2] -> title;  columns[7] -> abstract;    separated by whitespace
                 this.documents.put(id_document, columns[2] + " " + columns[7]);
                 id_document++;
             }
