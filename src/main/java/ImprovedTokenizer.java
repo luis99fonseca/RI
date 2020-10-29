@@ -36,11 +36,11 @@ public class ImprovedTokenizer implements Tokenizer {
 
     @Override
     public String[] process_tokens(String corpus) {
-        String[] array_tokens = corpus.replaceAll("[^a-zA-Z0-9]", " ")           // only alphanumeric chars
-                                        .replaceAll("\\b\\w{1,3}\\b\\s?", "")    // remove words less 3 chars
-                                        .trim()                                  // remove possible invisible chars created
-                                        .toLowerCase()                           // lowercase
-                                        .split("\\s+");                          // split one or more whitespaces
+        String[] array_tokens = corpus.replaceAll("[^a-zA-Z0-9]", " ")             // only alphanumeric chars
+                                        .replaceAll("\\b\\w{1,3}\\b\\s?", "")      // remove words less 3 chars
+                                        .trim()                                                     // remove possible invisible chars created
+                                        .toLowerCase()                                              // lowercase
+                                        .split("\\s+");                                       // split one or more whitespaces
 
 
         List<String> list_tokens = new ArrayList<>(Arrays.asList(array_tokens));
