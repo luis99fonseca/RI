@@ -35,10 +35,6 @@ public class App {
         //Tokenizer tokenizer = new SimpleTokenizer();
         Indexer indexer;
 
-//        corpusReader.loadDataCSV(csv_file);
-
-//        System.out.println(corpusReader.getDocuments().keySet());
-
         indexer = new Indexer(corpusReader, tokenizer);
 
 

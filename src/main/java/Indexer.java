@@ -29,18 +29,10 @@ public class Indexer {
      */
     public Map<String, Set<Integer>> process_index(){
 
-//        for (Integer doc_id : this.documents.keySet()) {
-//            for(String token : this.tokenizer.process_tokens(documents.get(doc_id))){
-//                if(!token.isEmpty()){
-//                    inverted_index.computeIfAbsent(token, k -> new TreeSet<>());
-//                    inverted_index.get(token).add(doc_id);
-//                }
-//            }
-//        }
-        Map<Integer, String> index; // TODO: change name alter
-        while ( !(index = this.corpusReader.readBlock()).isEmpty() ) {
-            for (Integer doc_id : index.keySet()) {
-                for (String token : this.tokenizer.process_tokens(index.get(doc_id))) {
+        Map<Integer, String> document_list;
+        while ( !(document_list = this.corpusReader.readBlock()).isEmpty() ) {
+            for (Integer doc_id : document_list.keySet()) {
+                for (String token : this.tokenizer.process_tokens(document_list.get(doc_id))) {
                     if (!token.isEmpty()) {
                         inverted_index.computeIfAbsent(token, k -> new TreeSet<>());
                         inverted_index.get(token).add(doc_id);

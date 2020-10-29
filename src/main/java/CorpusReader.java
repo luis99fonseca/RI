@@ -10,7 +10,6 @@ public class CorpusReader {
     private CSVReader csvReader;
     private Map<Integer, String> temp_docs = new HashMap<>();
 
-    // TODO: mudar later out constrcut
     public CorpusReader(String csv_file) throws FileNotFoundException {
         csvReader = new CSVReader(new FileReader(csv_file));
     }
@@ -26,31 +25,6 @@ public class CorpusReader {
 
     public Map<Integer, String> getDocuments() {
         return documents;
-    }
-
-
-    public void loadDataCSV(String csv_file) {
-        CSVReader reader = null;
-
-        try {
-            reader = new CSVReader(new FileReader(csv_file));
-            String[] columns;
-
-            reader.readNext(); // remove first line, as it contains the header
-
-            System.out.println("lines read b4: " + reader.getLinesRead());
-
-            while ((columns = reader.readNext()) != null) {
-                if (!columns[7].isEmpty()) {
-                    // columns[2] -> title;  columns[7] -> abstract;    separated by whitespace
-                    this.documents.put(id_document, columns[2] + " " + columns[7]);
-                }
-                id_document++;
-            }
-            System.out.println("size: " + this.documents.size());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public Map<Integer, String> readBlock() {
