@@ -17,8 +17,8 @@ public class Indexer {
     }
 
     /*
-    Given the documents and theirs tokens creates
-    inverted index as follows:
+    Given the documents and their tokens
+    create inverted index as follows: 
         token -> [ document1_id, document2_id, ... ]
      */
     public Map<String, Set<Integer>> process_index(){
