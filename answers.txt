@@ -1,0 +1,70 @@
+André Alves  89334
+Luís Fonseca 89066
+
+Nota: Como explicado ao professor, o CSVReader está aparentemente a saltar linhas sem razão aparente.
+4.
+     a)
+     Tendo em conta que lê-se o ficheiro em blocos de 5 mil linhas.
+     Simple Tokenizer:
+            - À volta de 6 segundos a executar.
+            - 500 Mb
+
+        Improved Tokenizer
+            - À volta de 9.2 segundos a executar.
+            - 500 Mb
+        Relativamente à memória cremos que é bastante menos do que aqui escrito, mas não encontramos uma maneira fiável de avaliar.
+
+     b) Simple Tokenizer: 60103
+        Improved Tokenizer: 51022
+
+    c) Simple Tokenizer:
+        aaaaaag : [27658]
+        aaaauga : [27530]
+        aaac : [26811]
+        aaag : [2401]
+        aaap : [23507]
+        aaars : [23851]
+        aabb : [13920]
+        aacaaaaaaggg : [27080]
+        aacetaminophen : [7027]
+        aacgaa : [21112]
+        aacuaaa : [22766]
+
+       Improved Tokenizer:
+        0000 : [15231]
+        0000005 : [1184]
+        0000011 : [5054]
+        000045 : [20891]
+        000055 : [5054]
+        0002755 : [7063]
+        00046 : [3367]
+        00056 : [3093]
+        00058367 : [12501]
+        0007 : [17703]
+        00070 : [6917]
+
+    d) Simple Tokenizer:
+
+        were=13489
+        are=13730
+        was=14098
+        from=14974
+        this=16179
+        that=19732
+        with=20862
+        for=20953
+        and=25862
+        the=25943
+
+    Improved Tokenizer:
+
+        protein=8084
+        human=8429
+        viral=9332
+        diseas=9407
+        cell=9500
+        use=11718
+        result=11917
+        studi=12404
+        infect=13663
+        virus=14259

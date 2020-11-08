@@ -70,4 +70,7 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
-all_sources_metadata_2020-03-13.csv 
+
+# Not Automated
+target/
+.idea/

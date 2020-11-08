@@ -1,7 +1,5 @@
 import com.opencsv.CSVReader;
-import org.tartarus.snowball.ext.englishStemmer;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -9,108 +7,51 @@ import java.util.*;
 
 public class CorpusReader {
 
-    private final Map<String, String> documents = new HashMap<>();
-    private final Map<Integer, String[]> tokens = new TreeMap<>();
-    private final englishStemmer stemmer = new englishStemmer();
+    private CSVReader csvReader;
+    private Map<Integer, String> temp_docs = new HashMap<>();
 
-    public Map<String, String> getDocuments() {
+    public CorpusReader(String csv_file) throws FileNotFoundException {
+        csvReader = new CSVReader(new FileReader(csv_file));
+    }
+
+    private final Map<Integer, String> documents = new HashMap<>();
+
+    /*
+    For each document in the dataset,
+     it creates a new entry with a unique id.
+    Being static guarantees that there won't be repeated ids between different instantiations
+    */
+    public static int id_document = 0;
+
+    public Map<Integer, String> getDocuments() {
         return documents;
     }
 
-    public Map<Integer, String[]>  getTokens() {
-        return tokens;
-    }
-
-    private List<String> englishStem(List<String> my_tokens) {
-
-        for(int i = 0 ; i < my_tokens.size(); i++) {
-            this.stemmer.setCurrent(my_tokens.get(i));
-            this.stemmer.stem();
-            my_tokens.set(i, stemmer.getCurrent()) ;
-        }
-
-        return my_tokens;
-    }
-
-    private Set<String> readStopWordsEnglish() {
-
-        Set<String> stop_words = new HashSet<>();
-        String path_file = "src/snowball_stopwords_EN.txt";
+    public Map<Integer, String> readBlock() {
 
         try {
-            File my_file = new File(path_file);
-            Scanner myReader = new Scanner(my_file);
-
-            while(myReader.hasNextLine())
-                stop_words.add(myReader.nextLine());
-
-        } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
-
-        return stop_words;
-    }
-
-
-    private String[] cleanData(String key){
-        return this.documents.get(key).replaceAll("[^A-Za-z0-9]", " ")   // remove non-alphabetic chars
-                .replaceAll("\\b\\w{1,3}\\b\\s?", "")                    // remove words less 3 chars
-                .toLowerCase()
-                .split("\\s+");                                                     // split whitespaces
-    };
-
-
-    public void loadData(String csv_file) {
-        CSVReader reader = null;
-
-        try {
-            reader = new CSVReader(new FileReader(csv_file));
             String[] columns;
-            int counter = 0; // only for test
+            temp_docs.clear();
 
-            reader.readNext(); // remove first line
-
-            while ((columns = reader.readNext()) != null && counter < 10) {
-                this.documents.put(columns[0], columns[2] + " " + columns[7]);
-                counter++;
+            if (id_document == 0) {
+                csvReader.readNext(); // remove first line, as it contains the header
             }
+
+            int lines_read = 0;
+
+            while (lines_read < 5000 && (columns = csvReader.readNext()) != null) {
+                if (!columns[7].isEmpty()) {
+                    // columns[2] -> title;  columns[7] -> abstract;    separated by whitespace
+                    temp_docs.put(id_document, columns[2] + " " + columns[7]);
+                    lines_read++;
+                }
+                id_document++;
+            }
+
+            return temp_docs;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
-
-    public void simpleTokenizer() {
-        int id_document = 0;
-
-        for (String key : this.documents.keySet()) {
-            String[] clean_words = this.cleanData(key);
-            this.tokens.put(id_document, clean_words);
-            id_document++;
-        }
-    }
-
-
-    public void improvedTokenizer() {
-        // stopwords
-        // snowball
-        int id_document = 0;
-        Set<String> stop_words = this.readStopWordsEnglish();
-        List<String> my_tokens = new ArrayList<>();
-
-        for (String key: this.documents.keySet()){
-            String[] clean_words = this.cleanData(key);
-
-            my_tokens.addAll(Arrays.asList(clean_words));
-            my_tokens.removeIf(stop_words::contains); // remove stop_words from tokens
-
-            this.tokens.put(id_document, englishStem(my_tokens).toArray(new String[0])); // clean stem
-
-            id_document++;
-            my_tokens.clear();
-
-        }
-    }
-
-
 }
