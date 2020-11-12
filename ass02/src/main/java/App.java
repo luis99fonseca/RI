@@ -10,7 +10,7 @@ Run as follows:
         mvn exec:java -Dexec.args="data/all_sources_metadata_2020-03-13.csv data/snowball_stopwords_EN.txt"
  */
 
-public class gApp {
+public class App {
 
     public static void main(String[] args) throws IOException {
         /*
@@ -40,8 +40,19 @@ public class gApp {
 
         // indexing
         final long startTime = System.nanoTime();
-        Map<String, Set<Integer>> inverted_index = indexer.process_index();
+        Map<String, List<Post>> inverted_index = indexer.process_index();
         final long endTime = System.nanoTime();
+
+
+        final long st = System.nanoTime();
+        inverted_index = indexer.calculateTfIdfWeights("results.txt");
+        final long et = System.nanoTime();
+
+
+        System.out.println("Time to calculate weights " + (et - st));
+        System.out.println("size of list " +inverted_index.get("2020").size()+ "; N = " +corpusReader.total_read_documents);
+        System.out.println(inverted_index.get("2020"));
+
 
        /*
        This code is used merely to answer the questions.
