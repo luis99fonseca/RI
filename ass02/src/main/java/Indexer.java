@@ -1,21 +1,19 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.util.*;
 
 public class Indexer {
 
-    private static Instrumentation instrumentation;
 
-    private Map<Integer, String> documents;
     private CorpusReader corpusReader;
-
     private Tokenizer tokenizer;
 
-    private final Map<String, Set<Integer>> inverted_index = new TreeMap<>();
+    // Number of collections
+    private int N = 0;
 
-    public Indexer(Map<Integer, String> documents, Tokenizer tokenizer) {
-        this.documents = documents;
-        this.tokenizer = tokenizer;
-    }
+    private final Map<String, List<Post>> inverted_index = new TreeMap<>();
+
 
     public Indexer(CorpusReader corpusReader, Tokenizer tokenizer) {
         this.corpusReader = corpusReader;
@@ -27,24 +25,67 @@ public class Indexer {
     create inverted index as follows: 
         token -> [ document1_id, document2_id, ... ]
      */
-    public Map<String, Set<Integer>> process_index(){
+    public Map<String, List<Post>> process_index(){
 
         Map<Integer, String> document_list;
+        Post temp_post = new Post(-1);
+
         while ( !(document_list = this.corpusReader.readBlock()).isEmpty() ) {
+
+            // counting the read documents to calculate idf
+            N += document_list.size();
+
             for (Integer doc_id : document_list.keySet()) {
                 for (String token : this.tokenizer.process_tokens(document_list.get(doc_id))) {
                     if (!token.isEmpty()) {
-                        inverted_index.computeIfAbsent(token, k -> new TreeSet<>());
-                        inverted_index.get(token).add(doc_id);
+                        inverted_index.computeIfAbsent(token, k -> new ArrayList<>());
+
+                        // TODO: maybe can need refactor
+                        temp_post.setDocument_id(doc_id);
+                        int i = inverted_index.get(token).indexOf(temp_post);
+
+                        if( i != -1 )
+                            inverted_index.get(token).get(i).increaseFreq();
+                        else
+                            inverted_index.get(token).add(new Post(doc_id));
                     }
                 }
             }
         }
+        return inverted_index;
+    }
+
+
+    /*
+        Create Weight Matrix
+        Df = Document Frequency = size of list associated the token
+    */
+    public Map<String, List<Post>> calculateTfIdfWeights(String file_name){
+
+        for(String token : inverted_index.keySet())
+            for(Post post: inverted_index.get(token))
+                post.tfIdfWeighting(N, inverted_index.get(token).size() );
+
+        writeInFile(file_name);
 
         return inverted_index;
     }
 
-    public void setDocuments(Map<Integer, String> documents) {
-        this.documents = documents;
+
+    private void writeInFile(String file_name){
+
+        try{
+            FileWriter myWriter = new FileWriter(file_name);
+            for(String token : inverted_index.keySet()){
+                myWriter.write(token + ": " + Math.log( (double) N/inverted_index.get(token).size()) + "; ");
+                for(Post post: inverted_index.get(token)){
+                    myWriter.write(post.getDocument_id() + ":" + post.getWeight()+"; ");
+                }
+                myWriter.write("\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 }

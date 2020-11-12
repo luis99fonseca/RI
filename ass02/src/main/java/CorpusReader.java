@@ -9,6 +9,7 @@ public class CorpusReader {
 
     private CSVReader csvReader;
     private Map<Integer, String> temp_docs = new HashMap<>();
+    public int total_read_documents = 0; // TODO: remove after
 
     public CorpusReader(String csv_file) throws FileNotFoundException {
         csvReader = new CSVReader(new FileReader(csv_file));
@@ -41,14 +42,16 @@ public class CorpusReader {
 
             while (lines_read < 5000 && (columns = csvReader.readNext()) != null) {
                 if (!columns[7].isEmpty()) {
+
                     // columns[2] -> title;  columns[7] -> abstract;    separated by whitespace
                     temp_docs.put(id_document, columns[2] + " " + columns[7]);
                     lines_read++;
+                    total_read_documents++;
                 }
                 id_document++;
             }
-
             return temp_docs;
+
         } catch (IOException e) {
             e.printStackTrace();
             return null;
