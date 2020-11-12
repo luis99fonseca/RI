@@ -33,24 +33,25 @@ public class App {
         // (Un)comment to choose Tokenizer
         Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
         //Tokenizer tokenizer = new SimpleTokenizer();
-        Indexer indexer;
+        IndexerTfIdf indexer_a;
+        IndexerBM25 indexer_b;
 
-        indexer = new Indexer(corpusReader, tokenizer);
+        //TODO: Through from command line
+        double b = 0.75;
+        double k = 1.2;
 
+
+        indexer_a = new IndexerTfIdf(corpusReader, tokenizer);
+        indexer_b = new IndexerBM25(corpusReader, tokenizer, k, b);
 
         // indexing
         final long startTime = System.nanoTime();
-        Map<String, List<Post>> inverted_index = indexer.process_index();
+        //Map<String, List<Post>> inverted_index = indexer_a.process_index();
+        Map<String, List<Post>> inverted_index = indexer_b.process_index();
         final long endTime = System.nanoTime();
 
 
-        final long st = System.nanoTime();
-        inverted_index = indexer.calculateTfIdfWeights("results.txt");
-        final long et = System.nanoTime();
-
-
-        System.out.println("Time to calculate weights " + (et - st));
-        System.out.println("size of list " +inverted_index.get("2020").size()+ "; N = " +corpusReader.total_read_documents);
+        System.out.println("size of list " +inverted_index.get("2020").size());
         System.out.println(inverted_index.get("2020"));
 
 

@@ -1,11 +1,10 @@
-import java.io.PipedOutputStream;
 import java.util.*;
 
 public class Post implements Comparable<Post>{
 
     private int document_id;
     private int freqToken;
-    private double weight;
+    private double score;
 
 
     public Post(int document_id){
@@ -22,7 +21,7 @@ public class Post implements Comparable<Post>{
     public int getDocument_id() { return document_id; }
 
 
-    public double getWeight(){ return weight; }
+    public double getScore(){ return score; }
 
 
     public void increaseFreq(){ freqToken++; }
@@ -39,9 +38,17 @@ public class Post implements Comparable<Post>{
     public void tfIdfWeighting(int N, int df){
 
         // W = (1 + log2(TF)) * log10(N/df)
-        weight = (1 + log2(freqToken)) * Math.log10((double) N/df); //TODO: can need be convert to double
+        score = (1 + log2(freqToken)) * calIDF(N, df); //TODO: can need be convert to double
     }
 
+    public void BM25(double k, double b, double avdl, int dl, int N, int df){
+        double idf = calIDF(N, df);
+        score = idf * ( ((k + 1) * freqToken) / (k * ( (1 - b) + b * dl/avdl ) + freqToken) );
+    }
+
+    private double calIDF(int N, int df){
+        return Math.log10((double) N/df);
+    }
 
     // compare only document id
     @Override
@@ -71,7 +78,7 @@ public class Post implements Comparable<Post>{
         return "Post{" +
                 "document_id=" + document_id +
                 ", freqToken=" + freqToken +
-                ", weight=" + weight +
+                ", score=" + score +
                 '}';
     }
 }
