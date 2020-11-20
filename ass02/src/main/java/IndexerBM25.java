@@ -32,29 +32,23 @@ public class IndexerBM25 extends Indexer{
             for (String doc_id : document_list.keySet()) {
 
                 int count_tokens = 0;
+                Map<String, Integer> temp_freq_tokens = new HashMap<>();
 
                 for (String token : tokenizer.process_tokens(document_list.get(doc_id))) {
 
                     if (!token.isEmpty()) {
-
                         count_tokens++;
 
-                        inverted_index.computeIfAbsent(token, k -> new ArrayList<>());
-
-                        /*
-                        to insert current doc_id to check if already exist some post with this id
-                        if it exists, dont need create another post, just increase the freq
-                         */
-                        // TODO: maybe can need refactor
-                        temp_post.setDocument_id(doc_id);
-                        int i = inverted_index.get(token).indexOf(temp_post);
-
-                        if( i != -1 )
-                            inverted_index.get(token).get(i).increaseFreq();
-                        else
-                            inverted_index.get(token).add(new Post(doc_id));
+                        temp_freq_tokens.computeIfAbsent(token, k->0);
+                        temp_freq_tokens.put( token, temp_freq_tokens.get(token) + 1 );
                     }
                 }
+
+                for(String token: temp_freq_tokens.keySet()){
+                    inverted_index.computeIfAbsent(token, k-> new ArrayList<>());
+                    inverted_index.get(token).add(new Post(doc_id, temp_freq_tokens.get(token)));
+                }
+
                 docs_len.put(doc_id, count_tokens);
                 total_len_docs += count_tokens;
             }

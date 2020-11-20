@@ -24,7 +24,7 @@ public abstract class  Indexer {
    Given the documents and their tokens
    create inverted index as follows:
        token -> [ document1_id, document2_id, ... ]
-    */
+
     public Map<String, List<Post>> process_index(){
 
         Map<String, String> document_list;
@@ -42,7 +42,7 @@ public abstract class  Indexer {
                         /*
                         to insert current doc_id to check if already exist some post with this id
                         if it exists, dont need create another post, just increase the freq
-                         */
+
                         // TODO: maybe can need refactor
                         temp_post.setDocument_id(doc_id);
                         int i = inverted_index.get(token).indexOf(temp_post);
@@ -57,6 +57,10 @@ public abstract class  Indexer {
         }
         return inverted_index;
     }
+    */
+
+    public abstract Map<String, List<Post>> process_index();
+
 
     public void countingTotalWeight(Post post){
         String doc_id = post.getDocument_id();
