@@ -37,18 +37,15 @@ public class Searcher {
 
                 for(int i = 1; i < cols.length; i++){
                     String[] attr = cols[i].split(":");
-                    if(attr.length == 1){
-                        docs.add(new Post(attr[0], 0));
-                        System.out.println("ola");
-                    }
-                    else
-                        docs.add(new Post(attr[0], Double.parseDouble(attr[1])));
+                    docs.add(new Post(attr[0], Double.parseDouble(attr[1])));
                 }
 
                 String[] token_info = cols[0].split(":");
                 inverted_index.put(token_info[0], docs);
                 idfs.put(token_info[0], Double.parseDouble(token_info[1]));
             }
+
+            myReader.close();
 
         } catch (FileNotFoundException e) {
             System.err.println("Error: Fail read indexer file!");
@@ -70,7 +67,6 @@ public class Searcher {
             query.get(token).increaseFreq();
         }
 
-        //TODO: normalize doc weights here?
          // Calculate tokens of query weights
         double total_wt_query = 0.0;
 
@@ -104,6 +100,34 @@ public class Searcher {
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .forEach(x -> top_scores.put(x.getKey(), x.getValue()));
+
+        return top_scores;
+    }
+
+
+    public Map<String, Double> searchingBM25(String input){
+
+        Map<String, Double> scores = new HashMap<>();
+
+        for(String token: this.tokenizer.process_tokens(input)){
+            if (!token.isEmpty() && inverted_index.containsKey(token) ) {
+
+                for(Post post: inverted_index.get(token)){
+                    String doc_id = post.getDocument_id();
+                    scores.computeIfAbsent(doc_id, k -> 0.0);
+                    scores.put(doc_id, scores.get(doc_id) + post.getWeight());
+                }
+            }
+        }
+
+        Map<String, Double> top_scores = new LinkedHashMap<>();
+
+        //sort map
+        scores.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .forEach(x -> top_scores.put(x.getKey(), x.getValue()));
+
 
         return top_scores;
     }
