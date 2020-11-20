@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class IndexerBM25 extends Indexer{
 
-    Map<Integer, Integer> docs_len = new HashMap<>();
+    Map<String, Integer> docs_len = new HashMap<>();
     long total_len_docs = 0;
 
     // parameters of BM25
@@ -21,15 +21,15 @@ public class IndexerBM25 extends Indexer{
     @Override
     public Map<String, List<Post>> process_index() {
 
-        Map<Integer, String> document_list;
-        Post temp_post = new Post(-1);
+        Map<String, String> document_list;
+        Post temp_post = new Post("");
 
         while ( !(document_list = corpusReader.readBlock()).isEmpty() ) {
 
             // counting the read documents to calculate idf
             N += document_list.size();
 
-            for (Integer doc_id : document_list.keySet()) {
+            for (String doc_id : document_list.keySet()) {
 
                 int count_tokens = 0;
 
@@ -61,6 +61,7 @@ public class IndexerBM25 extends Indexer{
         }
 
         calBM25Ranking();
+        //normalizeWt();
 
         return inverted_index;
     }
@@ -72,10 +73,12 @@ public class IndexerBM25 extends Indexer{
         for(String token : inverted_index.keySet()){
             for(Post post: inverted_index.get(token)){
                 post.BM25(k, b, avdl, docs_len.get( post.getDocument_id() ) , N, inverted_index.get(token).size());
+                countingTotalWeight(post);
             }
         }
 
     }
+
 
     private double calAvgDocLen(){
         return (double) total_len_docs / docs_len.size();

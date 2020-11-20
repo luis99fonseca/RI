@@ -20,7 +20,7 @@ public class App {
         Default files are used if no input is given.
          */
 
-        String csv_file = "data/all_sources_metadata_2020-03-13.csv";
+        String csv_file = "data/metadata_2020-03-27.csv";
         String stop_words_file = "data/snowball_stopwords_EN.txt";
 
         if (args.length == 2) {
@@ -34,7 +34,7 @@ public class App {
         Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
         //Tokenizer tokenizer = new SimpleTokenizer();
         IndexerTfIdf indexer_a;
-        IndexerBM25 indexer_b;
+        //IndexerBM25 indexer_b;
 
         //TODO: Through from command line
         double b = 0.75;
@@ -42,17 +42,33 @@ public class App {
 
 
         indexer_a = new IndexerTfIdf(corpusReader, tokenizer);
-        indexer_b = new IndexerBM25(corpusReader, tokenizer, k, b);
+        //indexer_b = new IndexerBM25(corpusReader, tokenizer, k, b);
 
         // indexing
         final long startTime = System.nanoTime();
-        //Map<String, List<Post>> inverted_index = indexer_a.process_index();
-        Map<String, List<Post>> inverted_index = indexer_b.process_index();
+        Map<String, List<Post>> inverted_index = indexer_a.process_index();
+        //Map<String, List<Post>> inverted_index = indexer_b.process_index();
         final long endTime = System.nanoTime();
+        System.out.println(inverted_index.size());
+
+        indexer_a.writeInFile("results.txt");
+        //indexer_b.writeInFile("results.txt");
+
+        //Searcher s = new Searcher("results.txt", tokenizer);
+        ////Map<String, List<Post>> inverted_index = s.getInverted_indexer();
+
+        //Map<String, Double> scores =  s.searchingLncLtc("coronavirus origin");
+//
+        //System.out.println("Search: coronavirus origin");
+        //for(String key :scores.keySet())
+        //  System.out.println(key+" -> " + scores.get(key));
 
 
-        System.out.println("size of list " +inverted_index.get("2020").size());
-        System.out.println(inverted_index.get("2020"));
+        //for(String key : inverted_index.keySet())
+          //  System.out.println(key+" -> " + inverted_index.get(key));
+
+        //System.out.println("size of list " +inverted_index.get("2020").size());
+        //System.out.println(inverted_index.get("2020"));
 
 
        /*
@@ -61,7 +77,7 @@ public class App {
         */
 
         System.out.println("a) Time to indexing: " + (endTime - startTime));
-        System.out.println("b) Vocabulary size: " + inverted_index.size());
+        //System.out.println("b) Vocabulary size: " + inverted_index.size());
 
 
        //int i = 0;

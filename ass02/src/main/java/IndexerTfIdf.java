@@ -10,26 +10,29 @@ public class IndexerTfIdf extends Indexer  {
     }
 
 
+
     public Map<String, List<Post>> process_index(){
 
         //TODO: check this implementation better
         super.process_index();
+
         calculateTfIdfWeights();
+        normalizeWt();
 
         return inverted_index;
     }
 
 
-    /*
-        Create Weight Matrix
-        Df = Document Frequency = size of list associated the token
-    */
     private void calculateTfIdfWeights(){
-
-        for(String token : inverted_index.keySet())
-            for(Post post: inverted_index.get(token))
-                post.tfIdfWeighting(N, inverted_index.get(token).size() );  // TODO: save idf?
+        for(String token : inverted_index.keySet()){
+            for(Post post: inverted_index.get(token)){
+                post.tfIdfWeighting();
+                countingTotalWeight(post);
+            }
+        }
     }
+
+
 
 
 }
