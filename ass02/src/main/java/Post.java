@@ -16,6 +16,11 @@ public class Post implements Comparable<Post>{
         this.freqToken = 1;
     }
 
+    public Post(String document_id, int freqToken){
+        this.document_id = document_id;
+        this.freqToken = freqToken;
+    }
+
     public Post(String document_id, double weight){
         this.document_id = document_id;
         this.weight = weight;
@@ -51,7 +56,7 @@ public class Post implements Comparable<Post>{
 
     public void tfIdfWeighting(){
 
-        // W = (1 + log10(TF)) + n
+        // W = (1 + log10(TF)) * n
         weight = (1 + Math.log10(freqToken)) * 1;
     }
 

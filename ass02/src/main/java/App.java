@@ -31,8 +31,8 @@ public class App {
         CorpusReader corpusReader = new CorpusReader(csv_file);
 
         // (Un)comment to choose Tokenizer
-        Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
-        //Tokenizer tokenizer = new SimpleTokenizer();
+        //Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
+        Tokenizer tokenizer = new SimpleTokenizer();
         IndexerTfIdf indexer_a;
         //IndexerBM25 indexer_b;
 

@@ -21,7 +21,7 @@ public class CorpusReader {
      it creates a new entry with a unique id.
     Being static guarantees that there won't be repeated ids between different instantiations
     */
-    public static int id_document = 0; //TODO: REMOVE
+    public static boolean first_line = true; //TODO: REMOVE
 
     public Map<String, String> getDocuments() {
         return documents;
@@ -33,8 +33,9 @@ public class CorpusReader {
             String[] columns;
             temp_docs.clear();
 
-            if (id_document == 0) {
+            if (first_line) {
                 csvReader.readNext(); // remove first line, as it contains the header
+                first_line = false;
             }
 
             int lines_read = 0;
@@ -46,7 +47,6 @@ public class CorpusReader {
                     temp_docs.put(columns[0], columns[3] + " " + columns[8]);
                     lines_read++;
                 }
-                //id_document++;
             }
             return temp_docs;
 
