@@ -39,7 +39,7 @@ public class IndexerBM25 extends Indexer{
                     if (!token.isEmpty()) {
                         count_tokens++;
 
-                        temp_freq_tokens.computeIfAbsent(token, k->0);
+                        temp_freq_tokens.computeIfAbsent(token, k-> 0);
                         temp_freq_tokens.put( token, temp_freq_tokens.get(token) + 1 );
                     }
                 }
@@ -55,7 +55,6 @@ public class IndexerBM25 extends Indexer{
         }
 
         calBM25Ranking();
-        //normalizeWt();
 
         return inverted_index;
     }
