@@ -1,29 +1,24 @@
 import java.util.*;
 
 public class Teste {
+    public void printaca(){
+        System.out.println("ola");
+    }
+
     public static void main(String[] args) {
+        //Testev2 x = new Testev2();
+        //x.printaca();
+        List<Post> list = new ArrayList<>();
+        Post a = new Post("abab");
+        list.add(a);
 
-        //TODO: delete this file before to submit the work
+        Post t_p = new Post("abab");
 
+        int i = list.indexOf(t_p);
 
-        Set<Post> x = new TreeSet<>();
-
-        Post p1 = new Post(1);
-        Post p2 = new Post(1);
-
-        x.add(p1);
-
-        System.out.println( x.contains(p2) );
-
-        // count freq
-       // x.get( x.indexOf(p2) ).increaseFreq();
-
-        System.out.println( p1.getFreqToken() ) ;
-
-
-        //System.out.println( p1.getDocument_id() );
-        //System.out.println( p2.getDocument_id() );
-
-
+        if( i != -1 )
+            System.out.println("ola");
+        else
+            System.out.println("adeus");
     }
 }
