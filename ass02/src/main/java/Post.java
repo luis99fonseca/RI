@@ -53,7 +53,6 @@ public class Post implements Comparable<Post>{
 
     public int getFreqToken(){ return freqToken; }
 
-
     public void tfIdfWeighting(){
 
         // W = (1 + log10(TF)) * n
@@ -61,6 +60,7 @@ public class Post implements Comparable<Post>{
     }
 
     public void tfIdfWeighting(double idf){
+        System.out.println("my freq is =" + freqToken);
         weight = (1 + Math.log10(freqToken)) * idf;
     }
 

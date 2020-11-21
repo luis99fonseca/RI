@@ -28,40 +28,40 @@ public class App {
             stop_words_file = args[1];
         }
 
-        CorpusReader corpusReader = new CorpusReader(csv_file);
-
-        // (Un)comment to choose Tokenizer
-        //Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
-        Tokenizer tokenizer = new SimpleTokenizer();
-        IndexerTfIdf indexer_a;
-        //IndexerBM25 indexer_b;
-
-        //TODO: Through from command line
-        double b = 0.75;
-        double k = 1.2;
-
-
-        indexer_a = new IndexerTfIdf(corpusReader, tokenizer);
-        //indexer_b = new IndexerBM25(corpusReader, tokenizer, k, b);
-
-        // indexing
-        final long startTime = System.nanoTime();
-        Map<String, List<Post>> inverted_index = indexer_a.process_index();
-        //Map<String, List<Post>> inverted_index = indexer_b.process_index();
-        final long endTime = System.nanoTime();
-        System.out.println(inverted_index.size());
-
-        indexer_a.writeInFile("results.txt");
-        //indexer_b.writeInFile("results.txt");
-
-        //Searcher s = new Searcher("results.txt", tokenizer);
-        ////Map<String, List<Post>> inverted_index = s.getInverted_indexer();
-
-        //Map<String, Double> scores =  s.searchingLncLtc("coronavirus origin");
+//        CorpusReader corpusReader = new CorpusReader(csv_file);
 //
-        //System.out.println("Search: coronavirus origin");
-        //for(String key :scores.keySet())
-        //  System.out.println(key+" -> " + scores.get(key));
+//        // (Un)comment to choose Tokenizer
+        Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
+////        Tokenizer tokenizer = new SimpleTokenizer();
+////        IndexerTfIdf indexer_a;
+//        IndexerBM25 indexer_b;
+//
+//        //TODO: Through from command line
+//        double b = 0.75;
+//        double k = 1.2;
+//
+//
+////        indexer_a = new IndexerTfIdf(corpusReader, tokenizer);
+//        indexer_b = new IndexerBM25(corpusReader, tokenizer, k, b);
+//
+//        // indexing
+//        final long startTime = System.nanoTime();
+////        Map<String, List<Post>> inverted_index = indexer_a.process_index();
+//        Map<String, List<Post>> inverted_index = indexer_b.process_index();
+//        final long endTime = System.nanoTime();
+//        System.out.println(inverted_index.size());
+
+//        indexer_a.writeInFile("results.txt");
+//        indexer_b.writeInFile("results.txt");
+
+        Searcher s = new Searcher("results.txt", tokenizer);
+        Map<String, List<Post>> inverted_index = s.getInverted_index();
+//
+        Map<String, Double> scores =  s.searchingLncLtc("coronavirus origin");
+//
+        System.out.println("Search: coronavirus origin");
+        for(String key :scores.keySet())
+          System.out.println(key+" -> " + scores.get(key));
 
 
         //for(String key : inverted_index.keySet())
@@ -76,7 +76,7 @@ public class App {
        Therefore efficiency was not taken into account.
         */
 
-        System.out.println("a) Time to indexing: " + (endTime - startTime));
+//        System.out.println("a) Time to indexing: " + (endTime - startTime));
         //System.out.println("b) Vocabulary size: " + inverted_index.size());
 
 
