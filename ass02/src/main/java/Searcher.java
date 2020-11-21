@@ -24,7 +24,7 @@ public class Searcher {
 
     private void loadIndexer(String file_name){
         inverted_index = new TreeMap<>();
-
+        String[] debug = new String[0];
         try{
             File myFile = new File(file_name);
             Scanner myReader = new Scanner(myFile);
@@ -37,8 +37,9 @@ public class Searcher {
 
                 for(int i = 1; i < cols.length; i++){
                     String[] attr = cols[i].split(":");
+                    // TODO: check and fix bug
                     if(attr.length == 1){
-                        docs.add(new Post(attr[0], 0));
+                        docs.add(new Post(attr[0], 0.0));
                         System.out.println("ola");
                     }
                     else
@@ -46,12 +47,17 @@ public class Searcher {
                 }
 
                 String[] token_info = cols[0].split(":");
+                debug = token_info;
                 inverted_index.put(token_info[0], docs);
                 idfs.put(token_info[0], Double.parseDouble(token_info[1]));
             }
 
         } catch (FileNotFoundException e) {
             System.err.println("Error: Fail read indexer file!");
+            e.printStackTrace();
+        } catch (ArrayIndexOutOfBoundsException e){
+            System.err.println("Error: Fail read split! = ");
+            System.out.println(Arrays.toString(debug));
             e.printStackTrace();
         }
     }
@@ -64,10 +70,14 @@ public class Searcher {
 
 
         for(String token: this.tokenizer.process_tokens(input)){
-            if (!token.isEmpty() && !query.containsKey(token)) {
-                query.put(token, new Post());
+            if (!token.isEmpty()){
+                query.putIfAbsent(token, new Post());
+                query.get(token).increaseFreq();
             }
-            query.get(token).increaseFreq();
+//            if (!token.isEmpty() && !query.containsKey(token)) {
+//                query.put(token, new Post());
+//            }
+//            query.get(token).increaseFreq();
         }
 
         //TODO: normalize doc weights here?
@@ -91,7 +101,7 @@ public class Searcher {
 
                 for(Post post : inverted_index.get(token)){
                     String doc_id = post.getDocument_id();
-                    scores.computeIfAbsent(doc_id, k -> 0.0);
+                    scores.putIfAbsent(doc_id, 0.0);
                     scores.put(doc_id, scores.get(doc_id) + (post.getWeight() * query_post.getWeight()));
                 }
             }

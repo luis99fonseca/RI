@@ -65,7 +65,8 @@ public abstract class  Indexer {
     public void countingTotalWeight(Post post){
         String doc_id = post.getDocument_id();
 
-        total_weights.computeIfAbsent(doc_id, k -> 0.0);
+//        total_weights.computeIfAbsent(doc_id, k -> 0.0);
+        total_weights.putIfAbsent(doc_id, 0.0);
         total_weights.put(doc_id, total_weights.get(doc_id) + Math.pow(post.getWeight(), 2));
     }
 
@@ -85,6 +86,9 @@ public abstract class  Indexer {
                 Calculate IDF = log10(N/df)
                 Df = Document Frequency = size of list associated the token
                 */
+                if (token.equals("zw1")){
+                    System.out.println("YOLO");
+                }
                 myWriter.write(token + ":" + Math.log10( (double) N/inverted_index.get(token).size()) + ";");
 
                 for(Post post: inverted_index.get(token)){

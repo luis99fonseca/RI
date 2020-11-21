@@ -28,7 +28,7 @@ public class ImprovedTokenizer implements Tokenizer {
                 this.stop_words.add(myReader.nextLine());
 
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
+            System.out.println("Stop Words File not Found!");
             e.printStackTrace();
         }
     }

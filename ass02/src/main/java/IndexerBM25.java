@@ -20,9 +20,7 @@ public class IndexerBM25 extends Indexer{
 
     @Override
     public Map<String, List<Post>> process_index() {
-
         Map<String, String> document_list;
-        Post temp_post = new Post("");
 
         while ( !(document_list = corpusReader.readBlock()).isEmpty() ) {
 
@@ -30,16 +28,16 @@ public class IndexerBM25 extends Indexer{
             N += document_list.size();
 
             for (String doc_id : document_list.keySet()) {
-
-                int count_tokens = 0;
                 Map<String, Integer> temp_freq_tokens = new HashMap<>();
+                int count_tokens = 0;
 
                 for (String token : tokenizer.process_tokens(document_list.get(doc_id))) {
 
                     if (!token.isEmpty()) {
                         count_tokens++;
 
-                        temp_freq_tokens.computeIfAbsent(token, k->0);
+//                        temp_freq_tokens.computeIfAbsent(token, k->0);
+                        temp_freq_tokens.putIfAbsent(token, 0);
                         temp_freq_tokens.put( token, temp_freq_tokens.get(token) + 1 );
                     }
                 }
@@ -66,6 +64,7 @@ public class IndexerBM25 extends Indexer{
 
         for(String token : inverted_index.keySet()){
             for(Post post: inverted_index.get(token)){
+                // todo: @açores N == docs_len.size() - entao é kinda redundante ter os 2 idk
                 post.BM25(k, b, avdl, docs_len.get( post.getDocument_id() ) , N, inverted_index.get(token).size());
                 countingTotalWeight(post);
             }
