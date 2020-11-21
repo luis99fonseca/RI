@@ -123,7 +123,7 @@ public class Searcher {
 
                 for(Post post: inverted_index.get(token)){
                     String doc_id = post.getDocument_id();
-                    scores.computeIfAbsent(doc_id, k -> 0.0);
+                    scores.putIfAbsent(doc_id, 0.0);
                     scores.put(doc_id, scores.get(doc_id) + post.getWeight());
                 }
             }
