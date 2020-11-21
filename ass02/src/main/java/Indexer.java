@@ -97,6 +97,9 @@ public abstract class  Indexer {
 
                 myWriter.write("\n");
             }
+
+            myWriter.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

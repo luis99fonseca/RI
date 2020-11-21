@@ -44,17 +44,4 @@ public class IndexerTfIdf extends Indexer  {
         return inverted_index;
     }
 
-
-    private void calculateTfIdfWeights(){
-        for(String token : inverted_index.keySet()){
-            for(Post post: inverted_index.get(token)){
-                post.tfIdfWeighting();
-                countingTotalWeight(post);
-            }
-        }
-    }
-
-
-
-
 }
