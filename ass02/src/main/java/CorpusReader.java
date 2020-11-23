@@ -41,7 +41,7 @@ public class CorpusReader {
             int lines_read = 0;
 
             while (lines_read < 5000 && (columns = csvReader.readNext()) != null) {
-                if (!columns[7].isEmpty()) {
+                if (!columns[8].isEmpty()) { //TODO: check se ta bem, agor ak mudei a coluna :D
 
                     // columns[3] -> title;  columns[8] -> abstract;    separated by whitespace
                     temp_docs.put(columns[0], columns[3] + " " + columns[8]);
