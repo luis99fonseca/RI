@@ -60,7 +60,6 @@ public class Post implements Comparable<Post>{
     }
 
     public void tfIdfWeighting(double idf){
-        System.out.println("my freq is =" + freqToken);
         weight = (1 + Math.log10(freqToken)) * idf;
     }
 
