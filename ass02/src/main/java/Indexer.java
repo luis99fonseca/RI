@@ -9,7 +9,7 @@ public abstract class  Indexer {
     public final Map<String, Double> total_weights = new HashMap<>();
 
     // Number of collections
-    protected int N = 0;
+    public int N = 0;
 
     public final Map<String, List<Post>> inverted_index = new TreeMap<>();
 
