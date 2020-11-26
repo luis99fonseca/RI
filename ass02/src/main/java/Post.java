@@ -65,9 +65,9 @@ public class Post implements Comparable<Post>{
 
     public void BM25(double k, double b, double avdl, int dl, int N, int df){
         double idf = calIDF(N, df);
-        if (this.document_id.equals("mv3crcsh")){
-            System.out.println("k=" + k +"; b" + b + ";avgl=" + avdl + ";dl= " + dl + "N=" + N + ";df="+df+"idf=" + idf);
-        }
+        //if (this.document_id.equals("mv3crcsh")){
+        //    System.out.print ln("k=" + k +"; b" + b + ";avgl=" + avdl + ";dl= " + dl + "N=" + N + ";df="+df+"idf=" + idf);
+        //} //TODO: remove after
 
         weight = idf * ( ((k + 1) * freqToken) / (k * ( (1 - b) + b * dl/avdl ) + freqToken) );
     }

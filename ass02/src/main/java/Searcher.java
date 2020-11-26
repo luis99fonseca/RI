@@ -58,7 +58,7 @@ public class Searcher {
         }
     }
 
-    public Map<String, Double> searchingLncLtc(String input){
+    public Map<String, Double> searchingLncLtc(String input, int n_top_docs){
 
         Map<String, Post> query = new HashMap<>();
 
@@ -110,11 +110,14 @@ public class Searcher {
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .forEach(x -> top_scores.put(x.getKey(), x.getValue()));
 
-        return top_scores;
+        return top_scores.entrySet()
+                            .stream()
+                            .limit(n_top_docs)
+                            .collect(LinkedHashMap::new,(m,v) -> m.put(v.getKey(), v.getValue()), Map::putAll );
     }
 
 
-    public Map<String, Double> searchingBM25(String input){
+    public Map<String, Double> searchingBM25(String input, int n_top_docs){
 
         Map<String, Double> scores = new HashMap<>();
 
@@ -137,8 +140,10 @@ public class Searcher {
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .forEach(x -> top_scores.put(x.getKey(), x.getValue()));
 
-
-        return top_scores;
+        return top_scores.entrySet()
+                    .stream()
+                    .limit(n_top_docs)
+                    .collect(LinkedHashMap::new,(m,v) -> m.put(v.getKey(), v.getValue()), Map::putAll );
     }
 
     private void loadQueries(String name_file){

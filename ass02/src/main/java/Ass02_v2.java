@@ -135,7 +135,7 @@ public class Ass02_v2 {
 
             String query = queries_reader.nextLine();
             final long startTime = System.nanoTime();
-            Map<String, Double> scores = s.searchingLncLtc(query);
+            Map<String, Double> scores = s.searchingLncLtc(query, 50);
             query_throughput[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 9));
             System.out.println("QUERY= " + query + "; RESULTS= " + scores.size());
 

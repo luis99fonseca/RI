@@ -7,7 +7,6 @@ public class ResultsInformation {
     private double ndcg;
 
     public ResultsInformation(double avg_precision, double precision, double recall, double ndcg) {
-        System.out.println("NDCG: " + ndcg);
         this.avg_precision = avg_precision;
         this.precision = precision;
         this.recall = recall;
