@@ -145,21 +145,24 @@ public class Ass02_v2 {
             for (String key : scores.keySet()) {
                 System.out.println(">> " + key + "; " + scores.get(key));
                 top_count++;
+
+                double relevance = queries_solutions.get(l + "").getOrDefault(key, 0);
+                if (top_count == 1){
+                    sum_scg += relevance;
+                    ideal_scg += queries_solutions.get(l + "").get(ideal_iterator.next());
+                }
+                else{                         // TODO: pensar qual é o "i"
+                    double v = Math.log(top_count) / Math.log(2);
+                    sum_scg += (relevance / v);
+                    ideal_scg += (queries_solutions.get(l + "").get(ideal_iterator.next()) / v);
+                }
+                System.out.println("TRUE COUNT: " + top_count + "->> n: " + sum_scg + "; " + ideal_scg);
+
                 if (queries_solutions.get(l + "").containsKey(key)) {
                     true_positives++;
 //                precision_list.add( ( (double) true_positives / top_count));
                     sum_precision += ((double) true_positives / top_count);
 
-                    if (true_positives == 1){
-                        sum_scg += queries_solutions.get(l + "").get(key);
-                        ideal_scg += queries_solutions.get(l + "").get(ideal_iterator.next());
-                    }
-                    else{                         // TODO: pensar qual é o "i"
-                        double v = Math.log(true_positives) / Math.log(2);
-                        sum_scg += (queries_solutions.get(l + "").get(key) / v);
-                        ideal_scg += (queries_solutions.get(l + "").get(ideal_iterator.next()) / v);
-                    }
-//                    System.out.println("TRUE COUNT: " + true_positives + "->> n: " + sum_scg + "; " + ideal_scg);
 //                recall_list.add(( (double) true_positives / queries_solutions.get("1").size()));
 //                    sum_recall += ((double) true_positives / queries_solutions.get("1").size());
                 }
