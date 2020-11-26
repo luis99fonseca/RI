@@ -76,3 +76,5 @@ target/
 .idea/
 CorpusReader.iml
 metadata_2020-03-27.csv
+results.txt
+resultsBM25.txt
