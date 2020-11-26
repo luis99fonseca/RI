@@ -165,12 +165,6 @@ public class App {
         else
             median = query_latency[query_latency.length/2];
 
-        for (int i = 1; i <= lines_read; i++) {
-            System.out.println(results_rank10.get(i + ""));
-            System.out.println(results_rank20.get(i + ""));
-            System.out.println(results_rank50.get(i + ""));
-            System.out.println("");
-        }
 
         System.out.println("Query Latency (Median): " + median + " ms");
     }
