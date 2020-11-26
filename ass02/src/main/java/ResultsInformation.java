@@ -1,10 +1,12 @@
 public class ResultsInformation {
 
     private double precision;
+    private double avg_precision;
     private double recall;
     private double f1;
 
-    public ResultsInformation(double precision, double recall) {
+    public ResultsInformation(double avg_precision, double precision, double recall) {
+        this.avg_precision = avg_precision;
         this.precision = precision;
         this.recall = recall;
         this.f1 = (2*precision*recall) / (recall + precision);
@@ -25,6 +27,7 @@ public class ResultsInformation {
     @Override
     public String toString() {
         return "ResultsInformation{" +
+                "avg_precision=" + avg_precision +
                 "precision=" + precision +
                 ", recall=" + recall +
                 ", f1=" + f1 +
