@@ -36,15 +36,14 @@ public class App {
         //Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
         Tokenizer tokenizer = new SimpleTokenizer();
 
-
         double b = 0.75;
         double k = 1.2;
 
-        //pipeline_indexer_tfidf(csv_file, tokenizer);
+        //pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
         //pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
 
-        //pipeline_indexer_bm25(csv_file, tokenizer, b, k);
-        //pipeline_searching_BM25(tokenizer, "coronavirus origin", 50);
+//        pipeline_indexer_bm25(csv_file, tokenizer, b, k);
+        //pipeline_searching_BM25(tokenizer, "coronavirus origin", 50); // (writes to a file (needed for the statistics part))
 
 
         /*
@@ -54,6 +53,10 @@ public class App {
         // toggle statistic calculation
         if(false)
             System.exit(-1);
+
+        // Change in accordance to the file name
+//        Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
+        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
 
         // Queries Solutions
         File my_file = new File("data/queries.relevance.filtered.txt");
@@ -68,7 +71,6 @@ public class App {
         }
 
         System.out.println("Solutions size: " + queries_solutions.size());
-
 
         // Sort queries solutions by relevance to calculate NDCG
         for (String main_key : queries_solutions.keySet()){
@@ -93,18 +95,14 @@ public class App {
         double ideal_dcg;
         int n_top_docs = 50;
 
-        Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
-        //Searcher s = new Searcher("resultsBM25.txt", tokenizer);
-
-
         Map<String, ResultsInformation> results_rank10 = new HashMap<>();
         Map<String, ResultsInformation> results_rank20 = new HashMap<>();
         Map<String, ResultsInformation> results_rank50 = new HashMap<>();
 
-        int lines_read = queries_solutions.size();
-        double[] query_latency = new double[lines_read];
+        int queries_read = queries_solutions.size();
+        double[] query_latency = new double[queries_read];
 
-        for (int l = 1; l <= lines_read; l++) {
+        for (int l = 1; l <= queries_read; l++) {
             top_count = 0;
             true_positives = 0;
             sum_precision = 0.0;
@@ -117,7 +115,7 @@ public class App {
             final long startTime = System.nanoTime();
             Map<String, Double> scores = s.searchingLncLtc(query, n_top_docs);
             //Map<String, Double> scores = s.searchingBM25(query, n_top_docs);
-            query_latency[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 12));
+            query_latency[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 6));
 
             // DCG perfect ranking order
             Set<String> ideal_order = queries_solutions.get(l + "").keySet();
@@ -157,6 +155,7 @@ public class App {
             }
         }
 
+        double[] query_latency_copy = query_latency.clone();
         Arrays.sort(query_latency);
         double median;
 
@@ -165,8 +164,144 @@ public class App {
         else
             median = query_latency[query_latency.length/2];
 
-
         System.out.println("Query Latency (Median): " + median + " ms");
+        System.out.println("> " + Arrays.toString(query_latency));
+
+        /*
+        * TABLE CONSTRUCTION
+        *
+        * */
+
+        String measures[] = new String[]{
+                "", "Precision", "Recall", "F-measure", "Avg Precision", "NDCG", "\tLatency"};
+
+        // MAIN HEADER
+        for (String m : measures) {
+            if (m.isEmpty()) {
+                System.out.printf("%10s", "");
+            } else {
+                System.out.printf("%21s", m);
+            }
+        }
+        System.out.println();
+
+        // SECONDARY HEADER
+        for (int i = 0; i < measures.length; i++) {
+            if (i == 0) {
+                System.out.printf("%10s", "Query #");
+            } else if (i == measures.length - 1) {
+                System.out.printf("%21s", "");
+            } else {
+                System.out.printf("%7s %7s %7s", "@10", "@20", "@30");
+            }
+        }
+        System.out.println();
+        for (int line = 1; line <= queries_read; line++) {
+
+            // RESULTS
+            for (int i = 0; i < measures.length; i++) {
+                if (i == 0) {
+                    System.out.printf("%10d", line);
+                } else if (i == measures.length - 1) {
+                    System.out.printf("%21.2f", query_latency_copy[line - 1]);
+                } else {
+                    double value01;
+                    double value02;
+                    double value03;
+                    switch (i) {
+                        case 1:
+                            value01 = results_rank10.get(line + "").getPrecision();
+                            value02 = results_rank20.get(line + "").getPrecision();
+                            value03 = results_rank50.get(line + "").getPrecision();
+                            break;
+                        case 2:
+                            value01 = results_rank10.get(line + "").getRecall();
+                            value02 = results_rank20.get(line + "").getRecall();
+                            value03 = results_rank50.get(line + "").getRecall();
+                            break;
+                        case 3:
+                            value01 = results_rank10.get(line + "").getF1();
+                            value02 = results_rank20.get(line + "").getF1();
+                            value03 = results_rank50.get(line + "").getF1();
+                            break;
+                        case 4:
+                            value01 = results_rank10.get(line + "").getAvg_precision();
+                            value02 = results_rank20.get(line + "").getAvg_precision();
+                            value03 = results_rank50.get(line + "").getAvg_precision();
+                            break;
+                        case 5:
+                            value01 = results_rank10.get(line + "").getNdcg();
+                            value02 = results_rank20.get(line + "").getNdcg();
+                            value03 = results_rank50.get(line + "").getNdcg();
+                            break;
+                        default:
+                            throw new IllegalStateException("Unexpected value: " + i);
+                    }
+
+                    System.out.printf("%7.3f %7.3f %7.3f",
+                            value01,
+                            value02,
+                            value03);
+                }
+            }
+
+            System.out.println();
+
+        }
+
+        // MEAN
+        for (int i = 0; i < measures.length; i++) {
+            if (i == 0) {
+                System.out.printf("%10s", "Mean");
+            } else if (i == measures.length - 1) {
+                System.out.printf("%21.2f", 6969.0);
+            } else {
+                double value01 = 0;
+                double value02 = 0;
+                double value03 = 0;
+                switch (i) {
+                    case 1:
+                        for (int q = 1; q <= queries_read; q++) {
+                            value01 += results_rank10.get(q + "").getPrecision();
+                            value02 += results_rank20.get(q + "").getPrecision();
+                            value03 += results_rank50.get(q + "").getPrecision();
+                        }
+                        break;
+                    case 2:
+                        for (int q = 1; q <= queries_read; q++) {
+                            value01 += results_rank10.get(q + "").getRecall();
+                            value02 += results_rank20.get(q + "").getRecall();
+                            value03 += results_rank50.get(q + "").getRecall();
+                        }
+                        break;
+                    case 3:
+                        for (int q = 1; q <= queries_read; q++) {
+                            value01 += results_rank10.get(q + "").getF1();
+                            value02 += results_rank20.get(q + "").getF1();
+                            value03 += results_rank50.get(q + "").getF1();
+                        }
+                        break;
+                    case 4:
+                        for (int q = 1; q <= queries_read; q++) {
+                            value01 += results_rank10.get(q + "").getAvg_precision();
+                            value02 += results_rank20.get(q + "").getAvg_precision();
+                            value03 += results_rank50.get(q + "").getAvg_precision();
+                        }
+                        break;
+                    case 5:
+                        for (int q = 1; q <= queries_read; q++) {
+                            value01 += results_rank10.get(q + "").getNdcg();
+                            value02 += results_rank20.get(q + "").getNdcg();
+                            value03 += results_rank50.get(q + "").getNdcg();
+                        }
+                        break;
+                }
+                System.out.printf("%7.3f %7.3f %7.3f",
+                        value01 / (queries_read),
+                        value02 / (queries_read),
+                        value03 / (queries_read));
+            }
+        }
     }
 
     public static void pipeline_indexer_tfidf(String csv_file, Tokenizer tokenizer)throws IOException{

@@ -111,7 +111,6 @@ public class PrintingMain {
                     case 1:
                         for (int q = 0; q < queries; q++) {
                             value01 += results_rank10.get(q + "").getPrecision();
-//                            System.out.println(">>" + results_rank10.get(q + "").getPrecision());
                             value02 += results_rank20.get(q + "").getPrecision();
                             value03 += results_rank50.get(q + "").getPrecision();
                         }
