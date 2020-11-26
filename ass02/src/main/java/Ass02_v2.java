@@ -130,7 +130,7 @@ public class Ass02_v2 {
             sum_precision = 0.0;
             sum_recall = 0.0;
 
-            sum_scg = 0; 
+            sum_scg = 0;
             ideal_scg = 0;
 
             String query = queries_reader.nextLine();

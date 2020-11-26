@@ -6,6 +6,14 @@ public class ResultsInformation {
     private double f1;
     private double ndcg;
 
+    public double getAvg_precision() {
+        return avg_precision;
+    }
+
+    public double getNdcg() {
+        return ndcg;
+    }
+
     public ResultsInformation(double avg_precision, double precision, double recall, double ndcg) {
         this.avg_precision = avg_precision;
         this.precision = precision;
