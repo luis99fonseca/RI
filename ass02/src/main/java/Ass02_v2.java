@@ -79,21 +79,28 @@ public class Ass02_v2 {
         System.out.println("SOLUTIONS SIZE= " + queries_solutions.size());
         System.out.println("SOLUTIONS (1) SIZE= " + queries_solutions.get("1").size());
 
-        Map<String, Integer> temp_map = new LinkedHashMap<>();
-        queries_solutions.get("1").entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .forEach(x -> temp_map.put(x.getKey(), x.getValue()));
-        for (String t_key : queries_solutions.get("1").keySet()){
-            System.out.println(queries_solutions.get("1").get(t_key));
-        }
-        System.out.println("------------------------");
-        queries_solutions.put("1", temp_map);
-        for (String t_key : queries_solutions.get("1").keySet()){
-            System.out.println(queries_solutions.get("1").get(t_key));
+//        System.out.println(queries_solutions.get("1"));
+//        for (String t_key : queries_solutions.get("1").keySet()){
+//            System.out.println(queries_solutions.get("1").get(t_key));
+//        }
+
+        for (String main_key : queries_solutions.keySet()){
+            Map<String, Integer> temp_map = new LinkedHashMap<>();
+
+            queries_solutions.get(main_key).entrySet()
+                    .stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .forEach(x -> temp_map.put(x.getKey(), x.getValue()));
+            queries_solutions.put(main_key, temp_map);
+
         }
 
-        System.exit(-1);
+//        System.out.println("------------------------");
+//        for (String t_key : queries_solutions.get("1").keySet()){
+//            System.out.println(queries_solutions.get("1").get(t_key));
+//        }
+
+//        System.exit(-1);
 
 
         File queries_file = new File("data/queries.txt");
@@ -108,6 +115,7 @@ public class Ass02_v2 {
         List<Double> f1_score = new ArrayList<>();
 
         double sum_scg;
+        double ideal_scg;
 
         Map<String, ResultsInformation> results_rank10 = new HashMap<>();
         Map<String, ResultsInformation> results_rank20 = new HashMap<>();
@@ -123,12 +131,16 @@ public class Ass02_v2 {
             sum_recall = 0.0;
 
             sum_scg = 0;
+            ideal_scg = 0;
 
             String query = queries_reader.nextLine();
             final long startTime = System.nanoTime();
             Map<String, Double> scores = s.searchingLncLtc(query);
             query_throughput[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 9));
             System.out.println("QUERY= " + query + "; RESULTS= " + scores.size());
+
+            Set<String> ideal_order = queries_solutions.get(l + "").keySet();
+            Iterator<String> ideal_iterator = ideal_order.iterator();
 
             for (String key : scores.keySet()) {
                 System.out.println(">> " + key + "; " + scores.get(key));
@@ -138,10 +150,16 @@ public class Ass02_v2 {
 //                precision_list.add( ( (double) true_positives / top_count));
                     sum_precision += ((double) true_positives / top_count);
 
-                    if (top_count == 1)
+                    if (true_positives == 1){
                         sum_scg += queries_solutions.get(l + "").get(key);
-                    else                                                                // TODO: pensar qual é o "i"
-                        sum_scg += (queries_solutions.get(l + "").get(key) / (Math.log(true_positives) / Math.log(2)) );
+                        ideal_scg += queries_solutions.get(l + "").get(ideal_iterator.next());
+                    }
+                    else{                         // TODO: pensar qual é o "i"
+                        double v = Math.log(true_positives) / Math.log(2);
+                        sum_scg += (queries_solutions.get(l + "").get(key) / v);
+                        ideal_scg += (queries_solutions.get(l + "").get(ideal_iterator.next()) / v);
+                    }
+//                    System.out.println("TRUE COUNT: " + true_positives + "->> n: " + sum_scg + "; " + ideal_scg);
 //                recall_list.add(( (double) true_positives / queries_solutions.get("1").size()));
 //                    sum_recall += ((double) true_positives / queries_solutions.get("1").size());
                 }
@@ -151,7 +169,9 @@ public class Ass02_v2 {
 //                f1_score.add(  (2 * precision_list.get(precision_list.size()-1) * recall_list.get(recall_list.size()-1))
 //                        / (precision_list.get(precision_list.size()-1) + recall_list.get(recall_list.size()-1))
 //                );
-                    results_rank10.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get("1").size()));
+                    System.out.println("n: " + sum_scg + "; " + ideal_scg);
+                    results_rank10.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get("1").size(), sum_scg / ideal_scg));
+//                    System.exit(-1);
                 }
                 else if (top_count == 20) {
 //                precision_list.add( sum_precision / true_positives );
@@ -159,7 +179,7 @@ public class Ass02_v2 {
 //                f1_score.add(  (2 * precision_list.get(precision_list.size()-1) * recall_list.get(recall_list.size()-1))
 //                        / (precision_list.get(precision_list.size()-1) + recall_list.get(recall_list.size()-1))
 //                );
-                    results_rank20.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get("1").size()));
+                    results_rank20.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get("1").size(), sum_scg / ideal_scg));
                 }
                 else if (top_count == 50) {
 //                precision_list.add( sum_precision / true_positives );
@@ -167,7 +187,7 @@ public class Ass02_v2 {
 //                f1_score.add(  (2 * precision_list.get(precision_list.size()-1) * recall_list.get(recall_list.size()-1))
 //                        / (precision_list.get(precision_list.size()-1) + recall_list.get(recall_list.size()-1))
 //                );
-                    results_rank50.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get("1").size()));
+                    results_rank50.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get("1").size(), sum_scg / ideal_scg));
                 break;
                 }
             }
@@ -175,11 +195,10 @@ public class Ass02_v2 {
         System.out.println("Query Throughput= " + (Arrays.stream(query_throughput).sum() / lines_read) + "; " + (lines_read / Arrays.stream(query_throughput).sum()));
         Arrays.sort(query_throughput);
         double median;
-        if (query_throughput.length % 2 == 0)
+        if (query_throughput.length % 2 == 0)   // do not change this if-else!!
             median = (query_throughput[query_throughput.length/2] + (double)query_throughput[query_throughput.length/2 - 1])/2;
         else
             median = query_throughput[query_throughput.length/2];
-//        double median = ((double) query_throughput[query_throughput.length / 2] + (double) query_throughput[query_throughput.length / 2 - 1]) / 2;
         System.out.println("Query Latency (Median in Seconds)= " + median);
 
         for (int i = 1; i <= lines_read; i++) {
