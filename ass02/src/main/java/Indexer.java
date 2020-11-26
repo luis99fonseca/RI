@@ -86,7 +86,6 @@ public abstract class  Indexer {
                 Calculate IDF = log10(N/df)
                 Df = Document Frequency = size of list associated the token
                 */
-
                 myWriter.write(token + ":" + Math.log10( (double) N/inverted_index.get(token).size()) + ";");
 
                 for(Post post: inverted_index.get(token)){
