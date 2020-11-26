@@ -40,10 +40,10 @@ public class App {
         double k = 1.2;
 
         //pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
-        //pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
+//        pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
 
 //        pipeline_indexer_bm25(csv_file, tokenizer, b, k);
-        //pipeline_searching_BM25(tokenizer, "coronavirus origin", 50); // (writes to a file (needed for the statistics part))
+//        pipeline_searching_BM25(tokenizer, "mRNA vaccine coronavirus", 50); // (writes to a file (needed for the statistics part))
 
 
         /*
@@ -51,7 +51,7 @@ public class App {
          */
 
         // toggle statistic calculation
-        if(false)
+        if(true)
             System.exit(-1);
 
         // Change in accordance to the file name
@@ -254,7 +254,7 @@ public class App {
             if (i == 0) {
                 System.out.printf("%10s", "Mean");
             } else if (i == measures.length - 1) {
-                System.out.printf("%21.2f", 6969.0);
+                System.out.printf("%21.2f", Arrays.stream(query_latency).sum() / query_latency.length);
             } else {
                 double value01 = 0;
                 double value02 = 0;
