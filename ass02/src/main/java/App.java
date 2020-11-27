@@ -47,16 +47,18 @@ public class App {
 
 
         /*
+        *
         CALCULATE THE STATISTICS
-         */
+        *
+        */
 
         // toggle statistic calculation
-        if(true)
+        if(false)
             System.exit(-1);
 
         // Change in accordance to the file name
 //        Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
-        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
+        Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
 
         // Queries Solutions
         File my_file = new File("data/queries.relevance.filtered.txt");
@@ -106,8 +108,8 @@ public class App {
             top_count = 0;
             true_positives = 0;
             sum_precision = 0.0;
-            sum_dcg = 0;
-            ideal_dcg = 0;
+            sum_dcg = 0.0;
+            ideal_dcg = 0.0;
 
             String query = queries_reader.nextLine();
 
@@ -143,19 +145,23 @@ public class App {
                 }
 
                 if (top_count == 10) {
-                    results_rank10.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get("1").size(), sum_dcg / ideal_dcg));
+                    results_rank10.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get(l + "").size(), sum_dcg / ideal_dcg));
                 }
                 else if (top_count == 20) {
-                    results_rank20.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get("1").size(), sum_dcg / ideal_dcg));
+                    results_rank20.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get(l + "").size(), sum_dcg / ideal_dcg));
                 }
                 else if (top_count == 50) {
-                    results_rank50.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get("1").size(), sum_dcg / ideal_dcg));
+                    results_rank50.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get(l + "").size(), sum_dcg / ideal_dcg));
                     break;
                 }
             }
         }
 
+
         double[] query_latency_copy = query_latency.clone();
+
+       //TODO;  ((Arrays.stream(query_throughput).sum() * 10^3) / queries_read)
+        
         Arrays.sort(query_latency);
         double median;
 
