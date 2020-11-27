@@ -13,12 +13,6 @@ public class Searcher {
         // load indexer
         loadIndexer(name_file);
         this.tokenizer = tokenizer;
-
-    }
-
-    // TODO: maybe remove or not
-    public Searcher(Map<String, List<Post>> inverted_index){
-        this.inverted_index = inverted_index;
     }
 
 
@@ -70,10 +64,6 @@ public class Searcher {
                 query.putIfAbsent(token, new Post());
                 query.get(token).increaseFreq();
             }
-//            if (!token.isEmpty() && !query.containsKey(token)) {
-//                query.put(token, new Post());
-//            }
-//            query.get(token).increaseFreq();
         }
 
          // Calculate tokens of query weights
@@ -104,12 +94,13 @@ public class Searcher {
 
         Map<String, Double> top_scores = new LinkedHashMap<>();
 
-        //sort map
+        // Sort map
         scores.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .forEach(x -> top_scores.put(x.getKey(), x.getValue()));
 
+        // Limit to top docs
         return top_scores.entrySet()
                             .stream()
                             .limit(n_top_docs)

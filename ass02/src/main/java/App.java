@@ -47,8 +47,10 @@ public class App {
 
 
         /*
+        *
         CALCULATE THE STATISTICS
-         */
+        *
+        */
 
         // toggle statistic calculation
         if(false)
@@ -56,7 +58,7 @@ public class App {
 
         // Change in accordance to the file name
 //        Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
-        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
+        Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
 
         // Queries Solutions
         File my_file = new File("data/queries.relevance.filtered.txt");
@@ -106,8 +108,8 @@ public class App {
             top_count = 0;
             true_positives = 0;
             sum_precision = 0.0;
-            sum_dcg = 0;
-            ideal_dcg = 0;
+            sum_dcg = 0.0;
+            ideal_dcg = 0.0;
 
             String query = queries_reader.nextLine();
 
@@ -145,19 +147,26 @@ public class App {
                 }
 
                 if (top_count == 10) {
-                    results_rank10.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get("1").size(), sum_dcg / ideal_dcg));
+                    double ndcg = check_division_by_zero(sum_dcg , ideal_dcg);
+                    results_rank10.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get(l + "").size(), ndcg));
                 }
                 else if (top_count == 20) {
-                    results_rank20.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get("1").size(), sum_dcg / ideal_dcg));
+                    double ndcg = check_division_by_zero(sum_dcg , ideal_dcg);
+                    results_rank20.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get(l + "").size(), ndcg));
                 }
                 else if (top_count == 50) {
-                    results_rank50.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get("1").size(), sum_dcg / ideal_dcg));
+                    double ndcg = check_division_by_zero(sum_dcg , ideal_dcg);
+                    results_rank50.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get(l + "").size(), ndcg));
                     break;
                 }
             }
         }
 
+
         double[] query_latency_copy = query_latency.clone();
+
+       //TODO;  ((Arrays.stream(query_throughput).sum() * 10^3) / queries_read)
+        
         Arrays.sort(query_latency);
         double median;
 
@@ -174,7 +183,7 @@ public class App {
         *
         * */
 
-        String measures[] = new String[]{
+        String[] measures = new String[]{
                 "", "Precision", "Recall", "F-measure", "Avg Precision", "NDCG", "\tLatency"};
 
         // MAIN HEADER
@@ -306,6 +315,12 @@ public class App {
         }
     }
 
+    public static double check_division_by_zero(double a, double b){
+        if(b == 0)
+            return 0;
+        return a/b;
+    }
+
     public static void pipeline_indexer_tfidf(String csv_file, Tokenizer tokenizer)throws IOException{
 
         CorpusReader corpusReader = new CorpusReader(csv_file);
@@ -313,7 +328,7 @@ public class App {
 
         // indexing
         final long startTime = System.nanoTime();
-        indexer.process_index();
+        Map<String, List<Post>> inverted_index = indexer.process_index();
         final long endTime = System.nanoTime();
 
         System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + "s;" );
@@ -329,7 +344,7 @@ public class App {
 
         // indexing
         final long startTime = System.nanoTime();
-        indexer.process_index();
+        Map<String, List<Post>> inverted_index = indexer.process_index();
         final long endTime = System.nanoTime();
 
         System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + " seconds;" );
