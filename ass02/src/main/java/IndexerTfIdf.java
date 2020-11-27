@@ -32,7 +32,7 @@ public class IndexerTfIdf extends Indexer  {
                     inverted_index.computeIfAbsent(token, k-> new ArrayList<>());
 
                     Post new_post = new Post(doc_id, temp_freq_tokens.get(token));
-                    new_post.tfIdfWeighting(); // TODO: after (luis) checking BM25, see if this calculus could be done at construction now
+                    new_post.tfIdfWeighting();
                     countingTotalWeight(new_post);
 
                     inverted_index.get(token).add(new_post);

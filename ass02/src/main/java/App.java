@@ -11,6 +11,12 @@ Run as follows:
         mvn compile
     - run:
         mvn exec:java -Dexec.args="data/all_sources_metadata_2020-03-13.csv data/snowball_stopwords_EN.txt"
+        OR
+        mvn exec:java
+    - run (for statistics):
+         mvn exec:java -Dexec.args="data/all_sources_metadata_2020-03-13.csv data/snowball_stopwords_EN.txt" > <nameOfFile>
+         OR
+         mvn exec:java > <nameOfFile>
  */
 
 public class App {
@@ -39,7 +45,7 @@ public class App {
         double b = 0.75;
         double k = 1.2;
 
-        //pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
+//        pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
 //        pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
 
 //        pipeline_indexer_bm25(csv_file, tokenizer, b, k);             // (writes to a file (needed for the statistics part))
@@ -57,8 +63,8 @@ public class App {
             System.exit(-1);
 
         // Change in accordance to the file name
-//        Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
         Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
+//        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
 
         // Queries Solutions
         File my_file = new File("data/queries.relevance.filtered.txt");
@@ -72,7 +78,7 @@ public class App {
             queries_solutions.get(line[0]).put(line[1], Integer.parseInt(line[2]));
         }
 
-        System.out.println("Solutions size: " + queries_solutions.size());
+//        System.out.println("Solutions size: " + queries_solutions.size());
 
         // Sort queries solutions by relevance to calculate NDCG
         for (String main_key : queries_solutions.keySet()){
@@ -105,6 +111,7 @@ public class App {
         double[] query_latency = new double[queries_read];
 
         for (int l = 1; l <= queries_read; l++) {
+
             top_count = 0;
             true_positives = 0;
             sum_precision = 0.0;
@@ -117,8 +124,8 @@ public class App {
             final long startTime = System.nanoTime();
 
             // change according to file read
-//            Map<String, Double> scores = s.searchingLncLtc(query, n_top_docs);
-            Map<String, Double> scores = s.searchingBM25(query, n_top_docs);
+            Map<String, Double> scores = s.searchingLncLtc(query, n_top_docs);
+//            Map<String, Double> scores = s.searchingBM25(query, n_top_docs);
             query_latency[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 6));
 
             // DCG perfect ranking order
@@ -162,10 +169,7 @@ public class App {
             }
         }
 
-
         double[] query_latency_copy = query_latency.clone();
-
-       //TODO;  ((Arrays.stream(query_throughput).sum() * 10^3) / queries_read)
         
         Arrays.sort(query_latency);
         double median;
@@ -176,7 +180,7 @@ public class App {
             median = query_latency[query_latency.length/2];
 
         System.out.println("Query Latency (Median): " + median + " ms");
-        System.out.println("> " + Arrays.toString(query_latency));
+        System.out.println("Query throughput " + (((Arrays.stream(query_latency).sum()) * Math.pow(10,3)) / queries_read));
 
         /*
         * TABLE CONSTRUCTION
@@ -313,6 +317,7 @@ public class App {
                         value03 / (queries_read));
             }
         }
+        System.out.println();
     }
 
     public static double check_division_by_zero(double a, double b){
