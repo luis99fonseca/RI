@@ -42,8 +42,8 @@ public class App {
         //pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
 //        pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
 
-//        pipeline_indexer_bm25(csv_file, tokenizer, b, k);
-//        pipeline_searching_BM25(tokenizer, "mRNA vaccine coronavirus", 50); // (writes to a file (needed for the statistics part))
+//        pipeline_indexer_bm25(csv_file, tokenizer, b, k);             // (writes to a file (needed for the statistics part))
+//        pipeline_searching_BM25(tokenizer, "coronavirus response to weather changes", 50);
 
 
         /*
@@ -51,7 +51,7 @@ public class App {
          */
 
         // toggle statistic calculation
-        if(true)
+        if(false)
             System.exit(-1);
 
         // Change in accordance to the file name
@@ -113,8 +113,10 @@ public class App {
 
             // Query latency
             final long startTime = System.nanoTime();
-            Map<String, Double> scores = s.searchingLncLtc(query, n_top_docs);
-            //Map<String, Double> scores = s.searchingBM25(query, n_top_docs);
+
+            // change according to file read
+//            Map<String, Double> scores = s.searchingLncLtc(query, n_top_docs);
+            Map<String, Double> scores = s.searchingBM25(query, n_top_docs);
             query_latency[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 6));
 
             // DCG perfect ranking order
