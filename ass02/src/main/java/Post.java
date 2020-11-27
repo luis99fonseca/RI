@@ -11,10 +11,6 @@ public class Post implements Comparable<Post>{
 
     }
 
-    public Post(String document_id){
-        this.document_id = document_id;
-        this.freqToken = 1;
-    }
 
     public Post(String document_id, int freqToken){
         this.document_id = document_id;
@@ -46,13 +42,6 @@ public class Post implements Comparable<Post>{
     public void increaseFreq(){ freqToken++; }
 
 
-    public void setDocument_id(String doc_id){
-        this.document_id = doc_id;
-    }
-
-
-    public int getFreqToken(){ return freqToken; }
-
     public void tfIdfWeighting(){
 
         // W = (1 + log10(TF)) * n
@@ -65,10 +54,6 @@ public class Post implements Comparable<Post>{
 
     public void BM25(double k, double b, double avdl, int dl, int N, int df){
         double idf = calIDF(N, df);
-        //if (this.document_id.equals("mv3crcsh")){
-        //    System.out.print ln("k=" + k +"; b" + b + ";avgl=" + avdl + ";dl= " + dl + "N=" + N + ";df="+df+"idf=" + idf);
-        //} //TODO: remove after
-
         weight = idf * ( ((k + 1) * freqToken) / (k * ( (1 - b) + b * dl/avdl ) + freqToken) );
     }
 
@@ -89,7 +74,7 @@ public class Post implements Comparable<Post>{
         return Objects.hash(document_id);
     }
 
-    // TODO: can dont be necessary
+
     @Override
     public int compareTo(Post p) {
         return (freqToken >= p.freqToken) ? 1 : -1;
