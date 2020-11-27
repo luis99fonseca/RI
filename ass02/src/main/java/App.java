@@ -63,7 +63,7 @@ public class App {
             System.exit(-1);
 
         // Change in accordance to the file name
-        Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
+        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
 //        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
 
         // Queries Solutions
@@ -124,8 +124,8 @@ public class App {
             final long startTime = System.nanoTime();
 
             // change according to file read
-            Map<String, Double> scores = s.searchingLncLtc(query, n_top_docs);
-//            Map<String, Double> scores = s.searchingBM25(query, n_top_docs);
+            //Map<String, Double> scores = s.searchingLncLtc(query, n_top_docs);
+            Map<String, Double> scores = s.searchingBM25(query, n_top_docs);
             query_latency[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 6));
 
             // DCG perfect ranking order
@@ -180,7 +180,7 @@ public class App {
             median = query_latency[query_latency.length/2];
 
         System.out.println("Query Latency (Median): " + median + " ms");
-        System.out.println("Query throughput " + (((Arrays.stream(query_latency).sum()) * Math.pow(10,3)) / queries_read));
+        System.out.println("Query throughput " + ( queries_read / ((Arrays.stream(query_latency).sum()) * Math.pow(10,-3))));
 
         /*
         * TABLE CONSTRUCTION
@@ -188,7 +188,7 @@ public class App {
         * */
 
         String[] measures = new String[]{
-                "", "Precision", "Recall", "F-measure", "Avg Precision", "NDCG", "\tLatency"};
+                "", "Precision", "Recall", "F-measure", "Avg Precision", "NDCG", "\tLatency(ms)"};
 
         // MAIN HEADER
         for (String m : measures) {
