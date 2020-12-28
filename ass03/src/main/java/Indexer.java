@@ -26,6 +26,7 @@ public abstract class  Indexer {
        token -> [ document1_id, document2_id, ... ]
     */
     public abstract Map<String, List<Post>> process_index();
+    public abstract Map<String, List<Post>> new_process_index();
 
 
     public void countingTotalWeight(Post post){

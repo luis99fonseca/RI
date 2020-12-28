@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class IndexerBM25 extends Indexer{
 
@@ -16,6 +13,10 @@ public class IndexerBM25 extends Indexer{
         super(corpusReader, tokenizer);
         this.k = k;
         this.b = b;
+    }
+
+    public Map<String, List<Post>> new_process_index(){
+        return new HashMap<>();
     }
 
     @Override

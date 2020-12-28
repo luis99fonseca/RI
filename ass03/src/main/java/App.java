@@ -48,10 +48,10 @@ public class App {
         double b = 0.75;
         double k = 1.2;
 
-//        pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
+        pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
 //        pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
 
-        pipeline_indexer_bm25(csv_file, tokenizer, b, k);             // (writes to a file (needed for the statistics part))
+//        pipeline_indexer_bm25(csv_file, tokenizer, b, k);             // (writes to a file (needed for the statistics part))
 //        pipeline_searching_BM25(tokenizer, "coronavirus response to weather changes", 50);
 
 
@@ -340,9 +340,10 @@ public class App {
         final long endTime = System.nanoTime();
 
         System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + "s;" );
-
+        System.exit(-1);
         // write in file the inverted index
         indexer.writeInFile("resultsTfIdf.txt");
+        System.out.println(indexer.N);
     }
 
     public static void pipeline_indexer_bm25(String csv_file, Tokenizer tokenizer,double b,double k)throws IOException{
