@@ -101,6 +101,7 @@ public class Post implements Comparable<Post>{
                 "document_id=" + document_id +
                 ", freqToken=" + freqToken +
                 ", score=" + weight +
+                ", positions= " + getTextPositions() +
                 '}';
     }
 }
