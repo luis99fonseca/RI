@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLOutput;
 import java.util.*;
@@ -336,13 +337,63 @@ public class App {
 
         // indexing
         final long startTime = System.nanoTime();
-        Map<String, List<Post>> inverted_index = indexer.process_index();
+        Map<String, List<Post>> inverted_index = indexer.new_process_index();
         final long endTime = System.nanoTime();
 
         System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + "s;" );
+
+        // Merge Files
+        int actual_file = 0;
+        int actual_max_file = 8;    // original / initial files
+        int next_max = actual_max_file;
+
+        boolean done = false;
+
+        int pair_count = 0;
+        File myFile;
+        Scanner [] scanners = new Scanner[2];
+
+        while (!done){
+            actual_file += 1;
+            System.out.println("actual_file " + actual_file
+                    + "; actual_max_file " + actual_max_file
+                    + "; next_max " + next_max
+                    + "; pair_count " + pair_count
+                    + "; impar: " + actual_max_file % 2);
+
+            // if there are merges to be done in the actual layer
+            if (actual_file <= actual_max_file){
+                System.out.println("IF file: " + actual_file);
+                myFile = new File("temp_files/temp_iindex_" + actual_file);
+                scanners[pair_count] = new Scanner(myFile);
+
+                pair_count += 1;
+            } else {
+                break;
+            }
+
+            // add to next layer
+            if (pair_count > 0 && pair_count % scanners.length == 0){
+                System.out.println("IF pairs");
+                pair_count = 0;
+                next_max += 1;
+                FileWriter myWriter = new FileWriter("temp_files/temp_iindex_" + (next_max));
+                myWriter.write((actual_file - 1) + "&" + (actual_file - 0) + ";");
+                myWriter.close();
+                scanners[0].close();
+                scanners[1].close();
+            }
+
+            // next layer
+            if (actual_file == actual_max_file){
+                actual_max_file = next_max;
+            }
+        }
+
+
         System.exit(-1);
         // write in file the inverted index
-        indexer.writeInFile("resultsTfIdf.txt");
+        //indexer.writeInFile("resultsTfIdf.txt");
         System.out.println(indexer.N);
     }
 

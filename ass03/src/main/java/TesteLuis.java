@@ -69,13 +69,78 @@ public class TesteLuis {
                 System.out.println("IF pairs");
                 pair_count = 0;
                 next_max += 1;
+
+                Map<String, List<Post>> inverted_index = new TreeMap<>();
+
+                while (scanners[0].hasNextLine()) {
+
+                    String data = scanners[0].nextLine();
+                    String[] cols = data.split(";");
+                    List<Post> docs = new ArrayList<>();
+
+
+
+                    for(int i = 1; i < cols.length; i++){
+                        String[] attr = cols[i].split(":");
+
+                        String[] pos = attr[2].split(",");
+                        List <Integer> positions = new ArrayList<>();
+                        for (String po : pos) {
+                            positions.add(Integer.parseInt(po));
+                        }
+                        docs.add(new Post(attr[0], Double.parseDouble(attr[1]), positions));
+
+
+                    }
+
+                    inverted_index.put(cols[0], docs);
+                }
+
+                while (scanners[1].hasNextLine()) {
+
+                    String data = scanners[1].nextLine();
+                    String[] cols = data.split(";");
+                    List<Post> docs = new ArrayList<>();
+
+
+                    for(int i = 1; i < cols.length; i++){
+                        String[] attr = cols[i].split(":");
+
+                        String[] pos = attr[2].split(",");
+                        List <Integer> positions = new ArrayList<>();
+                        for (String po : pos) {
+                            positions.add(Integer.parseInt(po));
+                        }
+
+                        docs.add(new Post(attr[0], Double.parseDouble(attr[1]), positions));
+
+
+                    }
+
+                    if (inverted_index.containsKey(cols[0])){
+                        inverted_index.get(cols[0]).addAll(docs);
+                    } else {
+                        inverted_index.put(cols[0], docs);
+                    }
+                }
+
                 FileWriter myWriter = new FileWriter("temp_files/temp_iindex_" + (next_max));
-//                myWriter.write( "> Scanner:" + 0 + "- file:" + (actual_file - 1) );
-//                myWriter.write( "; > Scanner" + 1 + "- file:" + (actual_file - 0) + "\n");
-                myWriter.write((actual_file - 1) + "&" + (actual_file - 0) + ";");
+
+                for(String token : inverted_index.keySet()){
+
+                    myWriter.write(token + ";");
+                    for(Post post: inverted_index.get(token)){
+                        //myWriter.write(post.getDocument_id() + ":" + post.getWeight()+":" + ";");
+                        myWriter.write(post.getDocument_id() + ":" + post.getWeight()+":" + post.getTextPositions() + ";");
+                    }
+
+                    myWriter.write("\n");
+                }
+//                myWriter.write((actual_file - 1) + "&" + (actual_file - 0) + ";");
                 myWriter.close();
                 scanners[0].close();
                 scanners[1].close();
+                break;
             }
 
             // next layer

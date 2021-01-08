@@ -12,6 +12,11 @@ public class Post implements Comparable<Post>{
 
     }
 
+    public Post(String document_id, double weight, List<Integer> positions){
+        this.document_id = document_id;
+        this.weight = weight;
+        this.positions = positions;
+    }
 
     public Post(String document_id, int freqToken, List<Integer> positions){
         this.document_id = document_id;
@@ -35,7 +40,6 @@ public class Post implements Comparable<Post>{
 
     public String getTextPositions(){
         StringBuilder pos = new StringBuilder();
-
         for(int num_pos : positions){
             String pos_common = num_pos + ",";
             pos.append(pos_common);

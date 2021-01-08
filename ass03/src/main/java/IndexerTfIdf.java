@@ -100,7 +100,7 @@ public class IndexerTfIdf extends Indexer  {
     }
 
     public void create_temp_file(int file_number) {
-        System.out.println("aa");
+        //System.out.println("aa");
         try{
             Files.createDirectories(Paths.get("temp_files"));
 
