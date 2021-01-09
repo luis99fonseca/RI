@@ -49,7 +49,7 @@ public class App {
         double b = 0.75;
         double k = 1.2;
 
-        pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
+//        pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
 //        pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
 
 //        pipeline_indexer_bm25(csv_file, tokenizer, b, k);             // (writes to a file (needed for the statistics part))
@@ -63,11 +63,11 @@ public class App {
         */
 
         // toggle statistic calculation
-        if(true)
+        if(false)
             System.exit(-1);
 
         // Change in accordance to the file name
-        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
+        Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
 //        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
 
         // Queries Solutions
@@ -129,7 +129,8 @@ public class App {
 
             // change according to file read
             //Map<String, Double> scores = s.searchingLncLtc(query, n_top_docs);
-            Map<String, Double> scores = s.searchingBM25(query, n_top_docs);
+            //Map<String, Double> scores = s.searchingBM25WithPositions(query, n_top_docs, 500, 4, 50);
+            Map<String, Double> scores = s.searchingLncLtcWithPositions(query, n_top_docs, 100, 4 ,10);
             query_latency[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 6));
 
             // DCG perfect ranking order

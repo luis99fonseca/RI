@@ -19,6 +19,43 @@ public class IndexerBM25 extends Indexer{
         return new HashMap<>();
     }
 
+
+    public Map<String, List<Post>> processIndexWithoutPositions() {
+        Map<String, String> document_list;
+
+        while ( !(document_list = corpusReader.readBlock()).isEmpty() ) {
+
+            // counting the read documents to calculate idf
+            N += document_list.size();
+
+            for (String doc_id : document_list.keySet()) {
+                Map<String, Integer> temp_freq_tokens = new HashMap<>();
+                int count_tokens = 0;
+
+                for (String token : tokenizer.process_tokens(document_list.get(doc_id))) {
+
+                    if (!token.isEmpty()) {
+                        count_tokens++;
+                        temp_freq_tokens.putIfAbsent(token, 0);
+                        temp_freq_tokens.put( token, temp_freq_tokens.get(token) + 1 );
+                    }
+                }
+
+                for(String token: temp_freq_tokens.keySet()){
+                    inverted_index.computeIfAbsent(token, k-> new ArrayList<>());
+                    inverted_index.get(token).add(new Post(doc_id, temp_freq_tokens.get(token)));
+                }
+
+                docs_len.put(doc_id, count_tokens);
+                total_len_docs += count_tokens;
+            }
+        }
+
+        calBM25Ranking();
+
+        return inverted_index;
+    }
+
     @Override
     public Map<String, List<Post>> process_index() {
         Map<String, String> document_list;

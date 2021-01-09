@@ -37,6 +37,10 @@ public class Post implements Comparable<Post>{
 
     public String getDocument_id() { return document_id; }
 
+    public List<Integer> getPositions(){
+        return positions;
+    }
+
 
     public String getTextPositions(){
         StringBuilder pos = new StringBuilder();
@@ -101,6 +105,14 @@ public class Post implements Comparable<Post>{
 
     @Override
     public String toString() {
+
+        if (positions.isEmpty())
+            return "Post{" +
+                    "document_id=" + document_id +
+                    ", freqToken=" + freqToken +
+                    ", score=" + weight +
+                    '}';
+
         return "Post{" +
                 "document_id=" + document_id +
                 ", freqToken=" + freqToken +
