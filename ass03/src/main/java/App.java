@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.*;
 
 
@@ -411,7 +410,7 @@ public class App {
         System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + " seconds;" );
 
         // write in file the inverted index
-        indexer.writeInFile("resultsBM25.txt");
+        indexer.writeInFileWithPositions("resultsBM25.txt");
     }
 
     public static void pipeline_searching_tfidf(Tokenizer tokenizer, String input, int n_top_docs) throws FileNotFoundException {

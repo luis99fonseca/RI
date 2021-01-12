@@ -6,7 +6,41 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class Teste {
+
+    public void runGC() {
+         Runtime runtime = Runtime.getRuntime();
+         long memoryMax = runtime.maxMemory();
+         long memoryUsed = runtime.totalMemory() - runtime.freeMemory();
+         double memoryUserPercentage = ((double) (memoryUsed * 100)) / memoryMax;
+         System.out.println("memory used " + memoryUsed * Math.pow(10,-6)+ "mb\nmemory percentage:  " + memoryUserPercentage  + "\nMemoryTotal: "+memoryMax * Math.pow(10,-6)+"mb");
+
+    }
     public static void main(String[] args) throws IOException {
+
+
+        Tokenizer tokenizer = new SimpleTokenizer();
+        Searcher s = new Searcher(tokenizer, "index_split", 10000);
+        s.searchingBM25WithPositions("covid", 10, 100, 2, 5);
+/*
+
+        CorpusReader corpusReader = new CorpusReader("data/metadata_2020-03-27.csv");
+        Indexer indexer = new IndexerTfIdf(corpusReader, tokenizer);
+
+        indexer.split_merged_file("resultsTfIdf.txt", 1000);
+
+
+        Teste mem = new Teste();
+        mem.runGC();
+
+        List<String> x = new ArrayList<>();
+        x.add("ola");
+        for(int i = 0; i < 500000000; i++)
+            x.add("adeus");
+
+
+        mem.runGC();
+
+
 
         Tokenizer tokenizer = new SimpleTokenizer();
         Searcher s = new Searcher("resultsBM25.txt", tokenizer);
@@ -27,7 +61,7 @@ public class Teste {
         Map<String, Double> x =  s.boostRankWithPositions(query, 100, 2, 5);
         System.out.println(x);
 
-/*
+
 
         List<Integer> x = new ArrayList<>();
         x.add(2);

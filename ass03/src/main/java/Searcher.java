@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.net.FileNameMap;
 import java.util.*;
 
 public class Searcher {
@@ -7,17 +9,54 @@ public class Searcher {
     private Map<String, List<Post>> inverted_index;
     private Map<String, Double> idfs = new TreeMap<>();
     private Tokenizer tokenizer;
+    private String directory_name;
+    private double max_mbs;
+    public Map<String, Integer> freq_terms_searched = new HashMap<>();
 
 
     public Searcher(String name_file, Tokenizer tokenizer){
+        inverted_index = new TreeMap<>();
         // load indexer
         loadIndexer(name_file);
         this.tokenizer = tokenizer;
     }
 
+    public Searcher(Tokenizer tokenizer, String directory_name, double max_mbs){
+        inverted_index = new TreeMap<>();
+        this.directory_name = directory_name;
+        this.tokenizer = tokenizer;
+        this.max_mbs = max_mbs;
+    }
+
+    private void check_memory_to_load_indexer(double percentage_to_remove){
+
+        Runtime runtime = Runtime.getRuntime();
+        double memoryUsed = (runtime.totalMemory() - runtime.freeMemory()) * Math.pow(10,-6);
+
+        if (memoryUsed >= max_mbs){
+
+            Map<String, Integer> sorted_freq_terms = sortMapByValueInteger(freq_terms_searched);
+            Set<String> terms = sorted_freq_terms.keySet();
+
+            int elements_to_delete = (int) percentage_to_remove * terms.size();
+            int count = 0;
+
+            for(String term : terms){
+
+                if(elements_to_delete == count)
+                    break;
+
+                freq_terms_searched.remove(term);
+
+                inverted_index.remove(term);
+
+                count++;
+            }
+        }
+    }
 
     private void loadIndexer(String file_name){
-        inverted_index = new TreeMap<>();
+
         String[] debug = new String[0];
         try{
             File myFile = new File(file_name);
@@ -53,6 +92,8 @@ public class Searcher {
 
                 String[] token_info = cols[0].split(":");
                 debug = token_info;
+
+                check_memory_to_load_indexer(0.10);
                 inverted_index.put(token_info[0], docs);
                 idfs.put(token_info[0], Double.parseDouble(token_info[1]));
             }
@@ -69,19 +110,51 @@ public class Searcher {
         }
     }
 
+    public void check_index(String[] query){
+
+        File directory = new File(directory_name);
+
+        FilenameFilter filter = (f1, name) -> name.endsWith(".txt");
+
+        String[] files = directory.list(filter);
+
+        assert files != null;
+
+        for(String term : query){
+
+            if(!inverted_index.containsKey(term)){
+
+                for(String name_file : files){
+
+                   String[] range_terms = name_file.split("\\.")[0].split("-");
+
+                   if ((range_terms[0].compareTo(term) <= 0 && term.compareTo(range_terms[1]) <=0 ))
+                       loadIndexer(directory_name + "/" + name_file);
+                }
+            }
+        }
+
+        //System.out.println(inverted_index);
+
+    }
+
     public Map<String, Double> searchingLncLtc(String input, int n_top_docs){
 
         Map<String, Post> query = new LinkedHashMap<>();
 
         //System.out.println(inverted_index.size());
+        String[] terms = this.tokenizer.process_tokens(input);
 
-
-        for(String token: this.tokenizer.process_tokens(input)){
+        for(String token: terms){
             if (!token.isEmpty()){
                 query.putIfAbsent(token, new Post());
                 query.get(token).increaseFreq();
+                freq_terms_searched.putIfAbsent(token, 0);
+                freq_terms_searched.put(token, freq_terms_searched.get(token) + 1);
             }
         }
+
+        check_index(terms);
 
          // Calculate tokens of query weights
         double total_wt_query = 0.0;
@@ -118,14 +191,18 @@ public class Searcher {
         Map<String, Post> query = new LinkedHashMap<>();
 
         //System.out.println(inverted_index.size());
+        String[] terms = this.tokenizer.process_tokens(input);
 
-
-        for(String token: this.tokenizer.process_tokens(input)){
+        for(String token: terms){
             if (!token.isEmpty()){
                 query.putIfAbsent(token, new Post());
                 query.get(token).increaseFreq();
+                freq_terms_searched.putIfAbsent(token, 0);
+                freq_terms_searched.put(token, freq_terms_searched.get(token) + 1);
             }
         }
+
+        check_index(terms);
 
         // Calculate tokens of query weights
         double total_wt_query = 0.0;
@@ -166,8 +243,15 @@ public class Searcher {
 
         Map<String, Double> scores = new HashMap<>();
 
-        for(String token: this.tokenizer.process_tokens(input)){
+        String[] terms = this.tokenizer.process_tokens(input);
+
+        check_index(terms);
+
+        for(String token: terms){
             if (!token.isEmpty() && inverted_index.containsKey(token) ) {
+
+                freq_terms_searched.putIfAbsent(token, 0);
+                freq_terms_searched.put(token, freq_terms_searched.get(token) + 1);
 
                 for(Post post: inverted_index.get(token)){
                     String doc_id = post.getDocument_id();
@@ -185,14 +269,20 @@ public class Searcher {
 
         Map<String, Double> scores = new HashMap<>();
         Map<String, Post> query = new LinkedHashMap<>();
+        String[] terms = this.tokenizer.process_tokens(input);
 
-        for(String token: this.tokenizer.process_tokens(input)){
+        check_index(terms);
+
+        for(String token: terms){
             if (!token.isEmpty())
                 query.putIfAbsent(token, new Post());
         }
 
         for(String token: query.keySet()){
             if (!token.isEmpty() && inverted_index.containsKey(token) ) {
+
+                freq_terms_searched.putIfAbsent(token, 0);
+                freq_terms_searched.put(token, freq_terms_searched.get(token) + 1);
 
                 for(Post post: inverted_index.get(token)){
                     String doc_id = post.getDocument_id();
@@ -287,6 +377,19 @@ public class Searcher {
         map_to_sort.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .forEach(x -> top_scores.put(x.getKey(), x.getValue()));
+
+        return  top_scores.entrySet()
+                .stream()
+                .collect(LinkedHashMap::new,(m,v) -> m.put(v.getKey(), v.getValue()), Map::putAll );
+    }
+
+    private Map<String, Integer> sortMapByValueInteger(Map<String, Integer> map_to_sort){
+        Map<String, Integer> top_scores = new LinkedHashMap<>();
+
+        map_to_sort.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
                 .forEach(x -> top_scores.put(x.getKey(), x.getValue()));
 
         return  top_scores.entrySet()
