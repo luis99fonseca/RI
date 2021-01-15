@@ -41,11 +41,8 @@ public class IndexerTfIdf extends Indexer  {
                     inverted_index.get(token).add(new_post);
                 }
             }
-            createTempFile(blocks_read);
-            inverted_index.clear();
         }
-
-        //        normalizeWt();
+        normalizeWt();
 
         return inverted_index;
     }
