@@ -46,12 +46,15 @@ public class App {
 
         double b = 0.75;
         double k = 1.2;
+
         /* Without Merge (From Project02)*/
+
 //        pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
 //        pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
 
 //        pipeline_indexer_bm25(csv_file, tokenizer, b, k);             // (writes to a file (needed for the statistics part))
 //        pipeline_searching_BM25(tokenizer, "coronavirus response to weather changes", 50);
+
 
         /* With Merge*/
         pipeline_indexer_tfidf_w_merge(csv_file, tokenizer);

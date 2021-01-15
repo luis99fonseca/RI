@@ -184,6 +184,7 @@ public abstract class  Indexer {
             writeInFileWithoutPositions(name_file);
 
         inverted_index = new TreeMap<>();
+        System.gc(); // free memory
     }
 
     protected double calculateMemory() {

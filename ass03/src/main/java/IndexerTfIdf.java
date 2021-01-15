@@ -131,6 +131,7 @@ public class IndexerTfIdf extends Indexer  {
             }
             normalizeWt();
             createTempFile(blocks_read);
+
             inverted_index.clear(); //TODO ver centa memoria
         }
 

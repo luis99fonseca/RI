@@ -52,6 +52,7 @@ public class Searcher {
 
                 count++;
             }
+            System.gc(); // free memory
         }
     }
 
