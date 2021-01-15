@@ -7,11 +7,12 @@ public class Post implements Comparable<Post>{
     private double weight = 0.0;
     private List<Integer> positions = new ArrayList<>();
 
+    private int length = 0;
 
     public Post(){
 
     }
-
+    //    Merge TfIdf Constructor
     public Post(String document_id, double weight, List<Integer> positions){
         this.document_id = document_id;
         this.weight = weight;
@@ -22,6 +23,14 @@ public class Post implements Comparable<Post>{
         this.document_id = document_id;
         this.freqToken = freqToken;
         this.positions = positions;
+    }
+
+    //    Merge Bm25 Constructor
+    public Post(String document_id, List<Integer> positions, int docLen, int freqToken){
+        this.document_id = document_id;
+        this.positions = positions;
+        this.length = docLen;
+        this.freqToken = freqToken;
     }
 
     public Post(String document_id, double weight){
@@ -36,6 +45,10 @@ public class Post implements Comparable<Post>{
 
 
     public String getDocument_id() { return document_id; }
+
+    public List<Integer> getPositions(){
+        return positions;
+    }
 
 
     public String getTextPositions(){
@@ -56,9 +69,15 @@ public class Post implements Comparable<Post>{
         this.weight = weight;
     }
 
+    public int getLength() {
+        return length;
+    }
 
     public void increaseFreq(){ freqToken++; }
 
+    public int getFreqToken() {
+        return freqToken;
+    }
 
     public void tfIdfWeighting(){
 
@@ -71,8 +90,11 @@ public class Post implements Comparable<Post>{
     }
 
     public void BM25(double k, double b, double avdl, int dl, int N, int df){
+//        System.out.println(k +"; " + b +"; " + "; " + avdl + "; " + dl + "; " + N + "; " + df);
+
         double idf = calIDF(N, df);
         weight = idf * ( ((k + 1) * freqToken) / (k * ( (1 - b) + b * dl/avdl ) + freqToken) );
+//        System.out.println("Weight: " + weight);
     }
 
     private double calIDF(int N, int df){
@@ -101,6 +123,14 @@ public class Post implements Comparable<Post>{
 
     @Override
     public String toString() {
+
+        if (positions.isEmpty())
+            return "Post{" +
+                    "document_id=" + document_id +
+                    ", freqToken=" + freqToken +
+                    ", score=" + weight +
+                    '}';
+
         return "Post{" +
                 "document_id=" + document_id +
                 ", freqToken=" + freqToken +

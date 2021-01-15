@@ -6,15 +6,18 @@ import java.util.*;
 
 
 /*
+André Alves - 89334
+Luís Fonseca - 89066
+
 Run as follows:
     - compile:
         mvn compile
     - run:
-        mvn exec:java -Dexec.args="data/all_sources_metadata_2020-03-13.csv data/snowball_stopwords_EN.txt"
+        mvn exec:java -Dexec.args="data/metadata_2020-03-27.csv data/snowball_stopwords_EN.txt"
         OR
         mvn exec:java
     - run (for statistics):
-         mvn exec:java -Dexec.args="data/all_sources_metadata_2020-03-13.csv data/snowball_stopwords_EN.txt" > <nameOfFile>
+         mvn exec:java -Dexec.args="data/metadata_2020-03-27.csv data/snowball_stopwords_EN.txt" > <nameOfFile>
          OR
          mvn exec:java > <nameOfFile>
  */
@@ -48,7 +51,7 @@ public class App {
 //        pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
 //        pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
 
-//        pipeline_indexer_bm25(csv_file, tokenizer, b, k);             // (writes to a file (needed for the statistics part))
+        pipeline_indexer_bm25(csv_file, tokenizer, b, k);             // (writes to a file (needed for the statistics part))
 //        pipeline_searching_BM25(tokenizer, "coronavirus response to weather changes", 50);
 
 
@@ -59,7 +62,7 @@ public class App {
         */
 
         // toggle statistic calculation
-        if(false)
+        if(true)
             System.exit(-1);
 
         // Change in accordance to the file name

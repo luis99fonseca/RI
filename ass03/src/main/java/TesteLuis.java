@@ -36,7 +36,7 @@ public class TesteLuis {
 //        myWriter.close();
 
         int actual_file = 0;
-        int actual_max_file = 8;    // original / initial files
+        int actual_max_file = 16;    // original / initial files
         int next_max = actual_max_file;
 
         boolean done = false;
@@ -77,8 +77,6 @@ public class TesteLuis {
                     String data = scanners[0].nextLine();
                     String[] cols = data.split(";");
                     List<Post> docs = new ArrayList<>();
-
-
 
                     for(int i = 1; i < cols.length; i++){
                         String[] attr = cols[i].split(":");
@@ -140,7 +138,7 @@ public class TesteLuis {
                 myWriter.close();
                 scanners[0].close();
                 scanners[1].close();
-                break;
+                //break;
             }
 
             // next layer

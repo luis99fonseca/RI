@@ -1,8 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.*;
 
 
@@ -48,13 +46,15 @@ public class App {
 
         double b = 0.75;
         double k = 1.2;
-
-        pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
+        /* Without Merge (From Project02)*/
+//        pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
 //        pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
 
 //        pipeline_indexer_bm25(csv_file, tokenizer, b, k);             // (writes to a file (needed for the statistics part))
 //        pipeline_searching_BM25(tokenizer, "coronavirus response to weather changes", 50);
 
+        /* With Merge*/
+        pipeline_indexer_tfidf_w_merge(csv_file, tokenizer);
 
         /*
         *
@@ -63,11 +63,11 @@ public class App {
         */
 
         // toggle statistic calculation
-        if(true)
+        if(false)
             System.exit(-1);
 
         // Change in accordance to the file name
-        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
+        Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
 //        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
 
         // Queries Solutions
@@ -129,7 +129,8 @@ public class App {
 
             // change according to file read
             //Map<String, Double> scores = s.searchingLncLtc(query, n_top_docs);
-            Map<String, Double> scores = s.searchingBM25(query, n_top_docs);
+            //Map<String, Double> scores = s.searchingBM25WithPositions(query, n_top_docs, 500, 4, 50);
+            Map<String, Double> scores = s.searchingLncLtcWithPositions(query, n_top_docs, 100, 4 ,10);
             query_latency[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 6));
 
             // DCG perfect ranking order
@@ -337,64 +338,37 @@ public class App {
 
         // indexing
         final long startTime = System.nanoTime();
-        Map<String, List<Post>> inverted_index = indexer.new_process_index();
+        Map<String, List<Post>> inverted_index = indexer.processIndexWithPositions();
+        final long endTime = System.nanoTime();
+
+        System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + "s;" );
+//        System.out.println("N: " + indexer.N);
+
+        // write in file the inverted index
+        indexer.writeInFileWithoutPositions("resultsTfIdf.txt");
+        System.out.println(indexer.N);
+    }
+
+    public static void pipeline_indexer_tfidf_w_merge(String csv_file, Tokenizer tokenizer)throws IOException{
+
+        CorpusReader corpusReader = new CorpusReader(csv_file);
+        Indexer indexer = new IndexerTfIdf(corpusReader, tokenizer);
+
+        // indexing
+        final long startTime = System.nanoTime();
+        indexer.processIndexWithMerge();
         final long endTime = System.nanoTime();
 
         System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + "s;" );
 
-        // Merge Files
-        int actual_file = 0;
-        int actual_max_file = 8;    // original / initial files
-        int next_max = actual_max_file;
-
-        boolean done = false;
-
-        int pair_count = 0;
-        File myFile;
-        Scanner [] scanners = new Scanner[2];
-
-        while (!done){
-            actual_file += 1;
-            System.out.println("actual_file " + actual_file
-                    + "; actual_max_file " + actual_max_file
-                    + "; next_max " + next_max
-                    + "; pair_count " + pair_count
-                    + "; impar: " + actual_max_file % 2);
-
-            // if there are merges to be done in the actual layer
-            if (actual_file <= actual_max_file){
-                System.out.println("IF file: " + actual_file);
-                myFile = new File("temp_files/temp_iindex_" + actual_file);
-                scanners[pair_count] = new Scanner(myFile);
-
-                pair_count += 1;
-            } else {
-                break;
-            }
-
-            // add to next layer
-            if (pair_count > 0 && pair_count % scanners.length == 0){
-                System.out.println("IF pairs");
-                pair_count = 0;
-                next_max += 1;
-                FileWriter myWriter = new FileWriter("temp_files/temp_iindex_" + (next_max));
-                myWriter.write((actual_file - 1) + "&" + (actual_file - 0) + ";");
-                myWriter.close();
-                scanners[0].close();
-                scanners[1].close();
-            }
-
-            // next layer
-            if (actual_file == actual_max_file){
-                actual_max_file = next_max;
-            }
-        }
-
+        indexer.mergeFiles();
 
         System.exit(-1);
-        // write in file the inverted index
-        //indexer.writeInFile("resultsTfIdf.txt");
-        System.out.println(indexer.N);
+
+
+//        // write in file the inverted index
+//        indexer.writeInFileWithoutPositions("resultsTfIdf.txt");
+//        System.out.println(indexer.N);
     }
 
     public static void pipeline_indexer_bm25(String csv_file, Tokenizer tokenizer,double b,double k)throws IOException{
@@ -404,13 +378,13 @@ public class App {
 
         // indexing
         final long startTime = System.nanoTime();
-        Map<String, List<Post>> inverted_index = indexer.process_index();
+        Map<String, List<Post>> inverted_index = indexer.processIndexWithPositions();
         final long endTime = System.nanoTime();
 
         System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + " seconds;" );
-
+        System.exit(-1);
         // write in file the inverted index
-        indexer.writeInFile("resultsBM25.txt");
+        indexer.writeInFileWithPositions("resultsBM25.txt");
     }
 
     public static void pipeline_searching_tfidf(Tokenizer tokenizer, String input, int n_top_docs) throws FileNotFoundException {
