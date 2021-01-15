@@ -202,7 +202,7 @@ public class IndexerTfIdf extends Indexer  {
             }
 
             boolean done = false;
-            FileWriter myWriter = new FileWriter("temp_files/temp_iindex_" + String.format("%02d", ++actual_file) + ".txt");
+            FileWriter myWriter = new FileWriter((last_layer ? "final_merge" : "temp_files/temp_iindex_" + String.format("%02d", ++actual_file)) + ".txt");
 
             // merge process
             while (!done) {
