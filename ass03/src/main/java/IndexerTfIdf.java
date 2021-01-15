@@ -144,7 +144,7 @@ public class IndexerTfIdf extends Indexer  {
         File f = new File("temp_files");
 
         // This filter will only include conditional files
-        FilenameFilter filter = (f1, name) -> name.startsWith("temp_iindex_") && name.endsWith(".txt");
+        FilenameFilter filter = (f1, name) -> (name.startsWith("temp_iindex_") || name.startsWith("final_merge")) && name.endsWith(".txt");
 
         String[] actual_layer = f.list(filter);
 
@@ -202,7 +202,7 @@ public class IndexerTfIdf extends Indexer  {
             }
 
             boolean done = false;
-            FileWriter myWriter = new FileWriter((last_layer ? "final_merge" : "temp_files/temp_iindex_" + String.format("%02d", ++actual_file)) + ".txt");
+            FileWriter myWriter = new FileWriter("temp_files/" + (last_layer ? "final_merge" : ("temp_iindex_" + String.format("%02d", ++actual_file))) + ".txt");
 
             // merge process
             while (!done) {
