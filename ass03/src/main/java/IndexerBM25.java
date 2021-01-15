@@ -167,7 +167,7 @@ public class IndexerBM25 extends Indexer{
     }
 
     @Override
-    public void mergeFiles() throws IOException {
+    public void mergeFiles(String last_file_name) throws IOException {
 
     }
 

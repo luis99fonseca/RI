@@ -1,7 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -33,7 +30,7 @@ public abstract class  Indexer {
     public abstract Map<String, List<Post>> processIndexWithPositions();
     public abstract Map<String, List<Post>> processIndexWithMerge();
 
-    public abstract void mergeFiles() throws IOException;
+    public abstract void mergeFiles(String last_file_name) throws IOException;
 
     public void countingTotalWeight(Post post){
         String doc_id = post.getDocument_id();
@@ -102,7 +99,7 @@ public abstract class  Indexer {
 
     protected abstract void createTempFile(int file_number);
 
-    public void split_merged_file(String file_name, int memory_mb_max){
+    public void splitMergedFile(String file_name, int memory_mb_max){
 
         try {
 
@@ -110,7 +107,26 @@ public abstract class  Indexer {
 
             Files.createDirectories(Paths.get(directory));
 
-            File myFile = new File(file_name);
+            File my_dir = new File(directory);
+
+            FilenameFilter filter = (f1, name) -> name.endsWith(".txt");
+
+            String[] files_to_delete = my_dir.list(filter);
+
+            assert files_to_delete != null;
+
+            // clean files in directory
+            for(String name_file : files_to_delete){
+
+                String path = directory + "/" + name_file;
+
+                if (!new File(path).delete())
+                    System.out.println("Error cleaning the directory " + directory);
+
+            }
+            System.out.println("Directory " + directory + " clean");
+
+            File myFile = new File("temp_files/" +file_name + ".txt");
             Scanner myReader = new Scanner(myFile);
             boolean with_positions = false;
 

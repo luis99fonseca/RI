@@ -20,7 +20,7 @@ public class Teste {
 
         Tokenizer tokenizer = new SimpleTokenizer();
         Searcher s = new Searcher(tokenizer, "index_split", 10000);
-        s.searchingBM25WithPositions("covid", 10, 100, 2, 5);
+        s.searchingBM25WithPositions("aaa", 10, 100, 2, 5);
 /*
 
         CorpusReader corpusReader = new CorpusReader("data/metadata_2020-03-27.csv");

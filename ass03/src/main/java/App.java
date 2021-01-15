@@ -57,7 +57,9 @@ public class App {
 
 
         /* With Merge*/
-        pipeline_indexer_tfidf_w_merge(csv_file, tokenizer);
+        //pipeline_indexer_tfidf_w_merge(csv_file, tokenizer, 500);
+
+        Searcher my_searcher = new Searcher(tokenizer, "index_split", 5000);
 
         /*
         *
@@ -69,9 +71,15 @@ public class App {
         if(false)
             System.exit(-1);
 
+        /*  Search
+        *   Without Merge        */
+
         // Change in accordance to the file name
-        Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
+        //Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
 //        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
+
+        /* With Merge*/
+        Searcher s = new Searcher(tokenizer, "index_split", 5000);
 
         // Queries Solutions
         File my_file = new File("data/queries.relevance.filtered.txt");
@@ -133,7 +141,7 @@ public class App {
             // change according to file read
             //Map<String, Double> scores = s.searchingLncLtc(query, n_top_docs);
             //Map<String, Double> scores = s.searchingBM25WithPositions(query, n_top_docs, 500, 4, 50);
-            Map<String, Double> scores = s.searchingLncLtcWithPositions(query, n_top_docs, 100, 4 ,10);
+            Map<String, Double> scores = s.searchingLncLtcWithPositions(query, n_top_docs, 100, 2, 5);
             query_latency[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 6));
 
             // DCG perfect ranking order
@@ -352,27 +360,26 @@ public class App {
         System.out.println(indexer.N);
     }
 
-    public static void pipeline_indexer_tfidf_w_merge(String csv_file, Tokenizer tokenizer)throws IOException{
+    public static void pipeline_indexer_tfidf_w_merge(String csv_file, Tokenizer tokenizer, int memory_mb_max)throws IOException{
 
         CorpusReader corpusReader = new CorpusReader(csv_file);
         Indexer indexer = new IndexerTfIdf(corpusReader, tokenizer);
+        String merge_file_name = "final_merge";
 
         // indexing
         final long startTime = System.nanoTime();
+
         indexer.processIndexWithMerge();
+        indexer.mergeFiles(merge_file_name);
+        indexer.splitMergedFile(merge_file_name , memory_mb_max);
+
         final long endTime = System.nanoTime();
 
         System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + "s;" );
 
-        indexer.mergeFiles();
 
-        System.exit(-1);
-
-
-//        // write in file the inverted index
-//        indexer.writeInFileWithoutPositions("resultsTfIdf.txt");
-//        System.out.println(indexer.N);
     }
+
 
     public static void pipeline_indexer_bm25(String csv_file, Tokenizer tokenizer,double b,double k)throws IOException{
 
@@ -395,7 +402,7 @@ public class App {
         Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
 
         final long startTime = System.nanoTime();
-        Map<String, Double> scores =  s.searchingLncLtc(input, n_top_docs);
+        Map<String, Double> scores =  s.searchingLncLtcWithoutPositions(input, n_top_docs);
         final long endTime = System.nanoTime();
 
         System.out.println("Tf-IDF");
