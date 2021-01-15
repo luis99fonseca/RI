@@ -54,7 +54,9 @@ public class App {
 //        pipeline_searching_BM25(tokenizer, "coronavirus response to weather changes", 50);
 
         /* With Merge*/
-        pipeline_indexer_tfidf_w_merge(csv_file, tokenizer);
+//        pipeline_indexer_tfidf_w_merge(csv_file, tokenizer);
+
+        pipeline_indexer_bm25_w_merge(csv_file, tokenizer, b, k);
 
         /*
         *
@@ -379,6 +381,19 @@ public class App {
         // indexing
         final long startTime = System.nanoTime();
         Map<String, List<Post>> inverted_index = indexer.processIndexWithPositions();
+        final long endTime = System.nanoTime();
+
+        System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + " seconds;" );
+        System.exit(-1);
+    }
+
+    public static void pipeline_indexer_bm25_w_merge(String csv_file, Tokenizer tokenizer ,double b,double k) throws IOException {
+        CorpusReader corpusReader = new CorpusReader(csv_file);
+        Indexer indexer = new IndexerBM25(corpusReader, tokenizer, k, b);
+
+        // indexing
+        final long startTime = System.nanoTime();
+        indexer.processIndexWithMerge();
         final long endTime = System.nanoTime();
 
         System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + " seconds;" );
