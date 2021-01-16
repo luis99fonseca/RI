@@ -348,7 +348,7 @@ public class Searcher {
                                 else if( pos_other_token == expected_pos_other_token)
                                     score = match_score;
 
-                                // penalization by pos TODO: maybe dont need else
+                                // penalization by pos
                                 else{
                                     score = match_score - (Math.abs(pos_other_token - expected_pos_other_token)
                                             * penalization_score);
@@ -425,12 +425,6 @@ public class Searcher {
         }
 
         return numbers.get(idx);
-    }
-
-
-    //TODO: can need be removed
-    private void loadQueries(String name_file){
-
     }
 
     public Map<String, List<Post>> getInverted_index() {

@@ -35,9 +35,19 @@ public class App {
         String csv_file = "data/metadata_2020-03-27.csv";
         String stop_words_file = "data/snowball_stopwords_EN.txt";
 
-        if (args.length == 2) {
+        /* from project03 */
+        boolean with_boost = true;
+        int memory_mb_max = 1000;
+        int merges_at_the_time = 2;
+        boolean with_positions = true;
+
+        if (args.length == 6) {
             csv_file = args[0];
             stop_words_file = args[1];
+            with_boost = Boolean.parseBoolean(args[2]);
+            memory_mb_max = Integer.parseInt(args[3]);
+            merges_at_the_time = Integer.parseInt(args[4]);
+            with_positions = Boolean.parseBoolean(args[5]);
         }
 
         // CHANGE to choose Tokenizer
@@ -47,17 +57,19 @@ public class App {
         double b = 0.75;
         double k = 1.2;
 
+
+
         /* Without Merge (From Project02)*/
-//        pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
+//        pipeline_indexer_tfidf(csv_file, tokenizer, with_positions);                  // (writes to a file (needed for the statistics part))
 //        pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
 
-//        pipeline_indexer_bm25(csv_file, tokenizer, b, k);             // (writes to a file (needed for the statistics part))
+//        pipeline_indexer_bm25(csv_file, tokenizer, b, k, with_positions);             // (writes to a file (needed for the statistics part))
 //        pipeline_searching_BM25(tokenizer, "coronavirus response to weather changes", 50);
 
 
         /* With Merge*/
-//        pipeline_indexer_tfidf_w_merge(csv_file, tokenizer, 1000);
-        pipeline_indexer_bm25_w_merge(csv_file, tokenizer, b, k, 1000);
+//        pipeline_indexer_tfidf_w_merge(csv_file, tokenizer, memory_mb_max, merges_at_the_time);
+        pipeline_indexer_bm25_w_merge(csv_file, tokenizer, b, k, memory_mb_max, merges_at_the_time);
 
         /*
         *
@@ -76,7 +88,7 @@ public class App {
 //        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
 
         /* With Merge*/
-        Searcher s = new Searcher(tokenizer, "index_split", 1000);
+        Searcher s = new Searcher(tokenizer, "index_split", memory_mb_max);
 
         // Queries Solutions
         File my_file = new File("data/queries.relevance.filtered.txt");
@@ -135,15 +147,14 @@ public class App {
             // Query latency
             final long startTime = System.nanoTime();
 
-<<<<<<< HEAD
-            // CHANGE according to file read
-=======
-            // change according to file read
-            boolean with_boost = true;
             
->>>>>>> 2becc51e0b73a697dfcf916ad2e8a50cd4e01557
+            /*  Search (CHANGE) */
+            /*  (from project02)      */
+            // CHANGE in accordance to the file name
             //Map<String, Double> scores = searchingLncLtcWithoutPositions(query, n_top_docs);
             //Map<String, Double> scores = searchingBM25WithoutPositions(query, n_top_docs)
+
+            /*   (from project03)      */
             //Map<String, Double> scores = s.searchingBM25WithPositions(query, n_top_docs, with_boost, 500, 5, 50);
             Map<String, Double> scores = s.searchingLncLtcWithPositions(query, n_top_docs, with_boost,  100, 2, 5);
             query_latency[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 6));
@@ -350,7 +361,7 @@ public class App {
         return a/b;
     }
 
-    public static void pipeline_indexer_tfidf(String csv_file, Tokenizer tokenizer)throws IOException{
+    public static void pipeline_indexer_tfidf(String csv_file, Tokenizer tokenizer, boolean withpos)throws IOException{
 
         CorpusReader corpusReader = new CorpusReader(csv_file);
         Indexer indexer = new IndexerTfIdf(corpusReader, tokenizer);
@@ -364,11 +375,10 @@ public class App {
 //        System.out.println("N: " + indexer.N);
 
         // write in file the inverted index
-        indexer.writeInFileWithoutPositions("resultsTfIdf.txt");
-        System.out.println(indexer.N);
+        indexer.writeResultsInDisk(withpos, "resultsTfIdf.txt");
     }
 
-    public static void pipeline_indexer_tfidf_w_merge(String csv_file, Tokenizer tokenizer, int memory_mb_max)throws IOException{
+    public static void pipeline_indexer_tfidf_w_merge(String csv_file, Tokenizer tokenizer, int memory_mb_max, int merges_at_the_time)throws IOException{
 
         CorpusReader corpusReader = new CorpusReader(csv_file);
         Indexer indexer = new IndexerTfIdf(corpusReader, tokenizer);
@@ -377,8 +387,8 @@ public class App {
         // indexing
         final long startTime = System.nanoTime();
 
-        indexer.processIndexWithMerge(merge_file_name, memory_mb_max); // todo: por com max memory na msm
-        indexer.mergeFiles(merge_file_name, memory_mb_max);
+        indexer.processIndexWithMerge(merge_file_name, memory_mb_max);
+        indexer.mergeFiles(merge_file_name, memory_mb_max, merges_at_the_time);
         indexer.splitMergedFile(merge_file_name , memory_mb_max);
 
         final long endTime = System.nanoTime();
@@ -387,7 +397,7 @@ public class App {
     }
 
 
-    public static void pipeline_indexer_bm25(String csv_file, Tokenizer tokenizer,double b,double k)throws IOException{
+    public static void pipeline_indexer_bm25(String csv_file, Tokenizer tokenizer,double b,double k, boolean withpos)throws IOException{
 
         CorpusReader corpusReader = new CorpusReader(csv_file);
         Indexer indexer = new IndexerBM25(corpusReader, tokenizer, k, b);
@@ -398,18 +408,20 @@ public class App {
         final long endTime = System.nanoTime();
 
         System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + " seconds;" );
+
+        // write in file the inverted index
+        indexer.writeResultsInDisk(withpos, "resultsBM25.txt");
     }
 
-    public static void pipeline_indexer_bm25_w_merge(String csv_file, Tokenizer tokenizer ,double b, double k, int memory_mb_max) throws IOException {
+    public static void pipeline_indexer_bm25_w_merge(String csv_file, Tokenizer tokenizer ,double b, double k, int memory_mb_max, int merges_at_the_time) throws IOException {
         CorpusReader corpusReader = new CorpusReader(csv_file);
         Indexer indexer = new IndexerBM25(corpusReader, tokenizer, k, b);
         String merge_file_name = "final_merge_bm25";
 
         // indexing
         final long startTime = System.nanoTime();
-        memory_mb_max = 300;
         indexer.processIndexWithMerge(merge_file_name, memory_mb_max);
-        indexer.mergeFiles(merge_file_name, memory_mb_max);
+        indexer.mergeFiles(merge_file_name, memory_mb_max, merges_at_the_time);
         indexer.splitMergedFile(merge_file_name , memory_mb_max);
         final long endTime = System.nanoTime();
 

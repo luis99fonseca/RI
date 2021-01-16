@@ -105,7 +105,6 @@ public class IndexerBM25 extends Indexer{
 
         for(String token : inverted_index.keySet()){
             for(Post post: inverted_index.get(token)){
-                //TODO ir buscar apenas ao Post :)
                 int temp_doc_len = docs_len.containsKey(post.getDocument_id()) ? docs_len.get(post.getDocument_id()) : post.getLength();
                 post.BM25(k, b, avdl, temp_doc_len , N, inverted_index.get(token).size());
                 countingTotalWeight(post);
@@ -180,7 +179,7 @@ public class IndexerBM25 extends Indexer{
     }
 
     @Override
-    public void mergeFiles(String last_file_name, int memory_mb_max) throws IOException {
+    public void mergeFiles(String last_file_name, int memory_mb_max, int merges_at_the_time) throws IOException {
 
         File f = new File("temp_files");
 
@@ -188,9 +187,6 @@ public class IndexerBM25 extends Indexer{
         FilenameFilter filter = (f1, name) -> (name.startsWith("temp_iindex_") || name.startsWith(last_file_name)) && name.endsWith(".txt");
 
         String[] actual_layer = f.list(filter);
-
-        // TODO: por merges at time as arg
-        int merges_at_the_time = 2;
 
         if (actual_layer.length == 1){
             return;
@@ -300,7 +296,7 @@ public class IndexerBM25 extends Indexer{
                                 for (String po : pos) {
                                     positions.add(Integer.parseInt(po));
                                 }
-                                //TODO: ainda tem as pos como argumento: ver se se passa 1 lista vazia quando n for pa ter ou ponho outro construtor
+
                                 docs.add(new Post(attr[0], positions, Integer.parseInt(attr[1].split("-")[0]), Integer.parseInt(attr[1].split("-")[1])));
                             }
 
@@ -363,7 +359,6 @@ public class IndexerBM25 extends Indexer{
             String directory = "temp_files";
 
             Files.createDirectories(Paths.get(directory));
-            //TODO: debaixo wont work pk iria tar smp a apagr os anteriores novos
 
             FileWriter myWriter;
             if (final_file_name.isEmpty())

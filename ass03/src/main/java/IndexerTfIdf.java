@@ -48,7 +48,6 @@ public class IndexerTfIdf extends Indexer  {
     }
 
 
-    //TODO: can need be removed
     public Map<String, List<Post>> processIndexWithPositions(){
         Map<String, String> document_list;
 
@@ -153,7 +152,7 @@ public class IndexerTfIdf extends Indexer  {
     }
 
     @Override
-    public void mergeFiles(String last_file_name, int memory_mb_max) throws IOException {
+    public void mergeFiles(String last_file_name, int memory_mb_max, int merges_at_the_time) throws IOException {
 
         File f = new File("temp_files");
 
@@ -161,8 +160,6 @@ public class IndexerTfIdf extends Indexer  {
         FilenameFilter filter = (f1, name) -> (name.startsWith("temp_iindex_") || name.startsWith(last_file_name)) && name.endsWith(".txt");
 
         String[] actual_layer = f.list(filter);
-
-        int merges_at_the_time = 3;
 
         if (actual_layer.length == 1){
             return;

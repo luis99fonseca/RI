@@ -53,7 +53,7 @@ public abstract class  Indexer {
         System.out.println("Directory " + directory + " clean");
     }
 
-    public abstract void mergeFiles(String last_file_name, int memory_mb_max) throws IOException;
+    public abstract void mergeFiles(String last_file_name, int memory_mb_max, int merges_at_the_time) throws IOException;
 
 
     protected int getStringIndex(String[] arr) {
@@ -147,7 +147,7 @@ public abstract class  Indexer {
         try {
             String directory = "index_split";
             clearTempFilesDirectory(directory);
-            
+
             File myFile = new File("temp_files/" +file_name + ".txt");
             Scanner myReader = new Scanner(myFile);
             boolean with_positions = false;
@@ -223,6 +223,16 @@ public abstract class  Indexer {
 
         inverted_index = new TreeMap<>();
         System.gc(); // free memory
+    }
+
+    public void writeResultsInDisk(boolean with_positions, String name_file){
+
+        // check if results file is calculated with proximity match rank boost or not
+        if(with_positions)
+            writeInFileWithPositions(name_file);
+        else
+            writeInFileWithoutPositions(name_file);
+
     }
 
     protected double calculateMemory() {
