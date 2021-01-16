@@ -12,13 +12,9 @@ Run as follows:
     - compile:
         mvn compile
     - run:
-        mvn exec:java -Dexec.args="data/metadata_2020-03-27.csv data/snowball_stopwords_EN.txt"
+        mvn exec:java -Dexec.args="data/metadata_2020-03-27.csv data/snowball_stopwords_EN.txt true 500 3 true"
         OR
         mvn exec:java
-    - run (for statistics):
-         mvn exec:java -Dexec.args="data/metadata_2020-03-27.csv data/snowball_stopwords_EN.txt" > <nameOfFile>
-         OR
-         mvn exec:java > <nameOfFile>
  */
 
 public class App {
@@ -37,8 +33,8 @@ public class App {
 
         /* from project03 */
         boolean with_boost = true;
-        int memory_mb_max = 1000;
-        int merges_at_the_time = 2;
+        int memory_mb_max = 500;
+        int merges_at_the_time = 3;
         boolean with_positions = true;
 
         if (args.length == 6) {
@@ -60,16 +56,16 @@ public class App {
 
 
         /* Without Merge (From Project02)*/
-//        pipeline_indexer_tfidf(csv_file, tokenizer, with_positions);                  // (writes to a file (needed for the statistics part))
+        //pipeline_indexer_tfidf(csv_file, tokenizer, with_positions);                  // (writes to a file (needed for the statistics part))
 //        pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
 
-//        pipeline_indexer_bm25(csv_file, tokenizer, b, k, with_positions);             // (writes to a file (needed for the statistics part))
+ //       pipeline_indexer_bm25(csv_file, tokenizer, b, k, with_positions);             // (writes to a file (needed for the statistics part))
 //        pipeline_searching_BM25(tokenizer, "coronavirus response to weather changes", 50);
 
 
-        /* With Merge*/
-//        pipeline_indexer_tfidf_w_merge(csv_file, tokenizer, memory_mb_max, merges_at_the_time);
-        pipeline_indexer_bm25_w_merge(csv_file, tokenizer, b, k, memory_mb_max, merges_at_the_time);
+        /* With Merge  (From Project03)*/
+       //pipeline_indexer_tfidf_w_merge(csv_file, tokenizer, memory_mb_max, merges_at_the_time);
+       // pipeline_indexer_bm25_w_merge(csv_file, tokenizer, b, k, memory_mb_max, merges_at_the_time);
 
         /*
         *
@@ -78,7 +74,7 @@ public class App {
         */
 
         // CHANGE statistic calculation
-        if(true)
+        if(false)
             System.exit(-1);
 
         /*  Search (CHANGE) */
@@ -155,8 +151,8 @@ public class App {
             //Map<String, Double> scores = searchingBM25WithoutPositions(query, n_top_docs)
 
             /*   (from project03)      */
-            //Map<String, Double> scores = s.searchingBM25WithPositions(query, n_top_docs, with_boost, 500, 5, 50);
-            Map<String, Double> scores = s.searchingLncLtcWithPositions(query, n_top_docs, with_boost,  100, 2, 5);
+            Map<String, Double> scores = s.searchingBM25WithPositions(query, n_top_docs, with_boost, 500, 5, 50);
+            //Map<String, Double> scores = s.searchingLncLtcWithPositions(query, n_top_docs, with_boost,  100, 2, 5);
             query_latency[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 6));
 
             // DCG perfect ranking order

@@ -195,9 +195,9 @@ public class IndexerBM25 extends Indexer{
         if (merges_at_the_time < 2) {
             throw new IllegalArgumentException("Cannot merge " + merges_at_the_time + " files at the time. Min = 2");
         }
-        if (merges_at_the_time > actual_layer.length) {
-            throw new IllegalArgumentException("Cannot merge " + merges_at_the_time + " files at the time, with only " + actual_layer.length + " originals.");
-        }
+        //if (merges_at_the_time > actual_layer.length) {
+        //    throw new IllegalArgumentException("Cannot merge " + merges_at_the_time + " files at the time, with only " + actual_layer.length + " originals.");
+        //}
 
         int actual_file = actual_layer.length;
 

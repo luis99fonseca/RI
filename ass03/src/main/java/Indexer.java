@@ -29,6 +29,7 @@ public abstract class  Indexer {
     public abstract Map<String, List<Post>> processIndexWithoutPositions();
     public abstract Map<String, List<Post>> processIndexWithPositions();
     public abstract Map<String, List<Post>> processIndexWithMerge(String last_file_name, int memory_mb_max) throws IOException;
+
     protected void clearTempFilesDirectory(String directory) throws IOException {
 
         Files.createDirectories(Paths.get(directory));
@@ -238,9 +239,7 @@ public abstract class  Indexer {
     protected double calculateMemory() {
 
         Runtime runtime = Runtime.getRuntime();
-        //long memoryMax = runtime.maxMemory();
         long memoryUsed = runtime.totalMemory() - runtime.freeMemory();
-        //double memoryUserPercentage = ((double) (memoryUsed * 100)) / memoryMax;
 
         //memory used in mb
         return memoryUsed * Math.pow(10, -6);
