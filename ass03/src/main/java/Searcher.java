@@ -307,8 +307,7 @@ public class Searcher {
         return sortMapByValue(scores, n_top_docs);
     }
 
-    // TODO: insert private after
-    public Map<String, Double> boostRankWithPositions(Map<String, Post> query, double match_score, int margin_window_error,
+    private Map<String, Double> boostRankWithPositions(Map<String, Post> query, double match_score, int margin_window_error,
                                                                                             double penalization_score){
 
         String [] tokens_query = query.keySet().toArray(new String[0]);

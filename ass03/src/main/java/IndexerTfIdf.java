@@ -91,15 +91,18 @@ public class IndexerTfIdf extends Indexer  {
         return inverted_index;
     }
 
-    public Map<String, List<Post>> processIndexWithMerge(){
+    public Map<String, List<Post>> processIndexWithMerge(String last_file_name, int memory_mb_max) throws IOException {
+        clearTempFilesDirectory("temp_files");
+
         Map<String, String> document_list;
         int blocks_read = 0;
+
+        double initial_memory_used = calculateMemory();
 
         while ( !(document_list = this.corpusReader.readBlock()).isEmpty() ) {
 
             // counting the number of read documents to calculate idf
             N += document_list.size();
-            blocks_read += 1;
 
             for (String doc_id : document_list.keySet()) {
                 Map<String, Integer> temp_freq_tokens = new HashMap<>();
@@ -129,10 +132,22 @@ public class IndexerTfIdf extends Indexer  {
                     inverted_index.get(token).add(new_post);
                 }
             }
-            normalizeWt();
-            createTempFile(blocks_read);
-            inverted_index.clear(); //TODO ver centa memoria
+            if ((calculateMemory() - initial_memory_used) > (memory_mb_max - 15)){
+                blocks_read += 1;
+                normalizeWt();
+                createTempFile(blocks_read, "");
+                inverted_index.clear();
+                System.gc();
+                initial_memory_used = calculateMemory();
+            }
+
         }
+
+        blocks_read += 1;
+        normalizeWt();
+        createTempFile(blocks_read, blocks_read == 1 ? last_file_name : "");
+        inverted_index.clear();
+        System.gc();
 
         return inverted_index;
     }
@@ -148,6 +163,11 @@ public class IndexerTfIdf extends Indexer  {
         String[] actual_layer = f.list(filter);
 
         int merges_at_the_time = 3;
+
+        if (actual_layer.length == 1){
+            return;
+        }
+
         if (merges_at_the_time < 2) {
             throw new IllegalArgumentException("Cannot merge " + merges_at_the_time + " files at the time. Min = 2");
         }
@@ -299,12 +319,22 @@ public class IndexerTfIdf extends Indexer  {
         }
     }
 
-    protected void createTempFile(int file_number) {
-        //System.out.println("aa");
+    protected void createTempFile(int file_number, String final_file_name) {
+        //  if final_file_name it means there is only one file, there
+
+        if (inverted_index.isEmpty()){
+            return;
+        }
+
         try{
             Files.createDirectories(Paths.get("temp_files"));
 
-            FileWriter myWriter = new FileWriter("temp_files/temp_iindex_" + String.format("%02d", file_number) + ".txt");
+            FileWriter myWriter;
+            if (final_file_name.isEmpty())
+                myWriter = new FileWriter("temp_files/temp_iindex_" + String.format("%02d", file_number) + ".txt");
+            else
+                myWriter = new FileWriter("temp_files/" + final_file_name + ".txt");
+
 
             for(String token : inverted_index.keySet()){
                 /*
@@ -313,7 +343,7 @@ public class IndexerTfIdf extends Indexer  {
                 */
 //                myWriter.write(token + ":" + Math.log10( (double) N/inverted_index.get(token).size()) + ";");
 
-                myWriter.write(token + ";");
+                myWriter.write(token + (!final_file_name.isEmpty() ? ":" + Math.log10((double) N / inverted_index.get(token).size()) : "") + ";");
                 for(Post post: inverted_index.get(token)){
                     myWriter.write(post.getDocument_id() + ":" + post.getWeight() + ":" + post.getTextPositions() + ";");
                 }

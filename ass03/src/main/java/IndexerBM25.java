@@ -118,15 +118,18 @@ public class IndexerBM25 extends Indexer{
         return (double) total_len_docs / N;
     }
 
-    public Map<String, List<Post>> processIndexWithMerge(){
+    public Map<String, List<Post>> processIndexWithMerge(String last_file_name, int memory_mb_max) throws IOException {
+        clearTempFilesDirectory("temp_files");
+
         Map<String, String> document_list;
         int blocks_read = 0;
+
+        double initial_memory_used = calculateMemory();
 
         while ( !(document_list = corpusReader.readBlock()).isEmpty() ) {
 
             // counting the read documents to calculate idf
             N += document_list.size();
-            blocks_read += 1;
 
             for (String doc_id : document_list.keySet()) {
                 Map<String, Integer> temp_freq_tokens = new HashMap<>();
@@ -156,11 +159,22 @@ public class IndexerBM25 extends Indexer{
                 docs_len.put(doc_id, count_tokens);
                 total_len_docs += count_tokens;
             }
-            createTempFile(blocks_read);
-            docs_len.clear();
-            //TODO: ter em conta a memoria usada tbm crl
-            inverted_index.clear();
+            if ((calculateMemory() - initial_memory_used) > (memory_mb_max - 15)){
+                blocks_read += 1;
+                createTempFile(blocks_read, "");
+                docs_len.clear();
+                inverted_index.clear();
+                System.gc();
+                initial_memory_used = calculateMemory();
+            }
         }
+        blocks_read += 1;
+        if (blocks_read == 1)
+            calBM25Ranking();
+        createTempFile(blocks_read, blocks_read == 1 ? last_file_name : "");
+        docs_len.clear();
+        inverted_index.clear();
+        System.gc();
 
         return inverted_index;
     }
@@ -173,10 +187,15 @@ public class IndexerBM25 extends Indexer{
         // This filter will only include conditional files
         FilenameFilter filter = (f1, name) -> (name.startsWith("temp_iindex_") || name.startsWith(last_file_name)) && name.endsWith(".txt");
 
-
         String[] actual_layer = f.list(filter);
 
+        // TODO: por merges at time as arg
         int merges_at_the_time = 2;
+
+        if (actual_layer.length == 1){
+            return;
+        }
+
         if (merges_at_the_time < 2) {
             throw new IllegalArgumentException("Cannot merge " + merges_at_the_time + " files at the time. Min = 2");
         }
@@ -334,36 +353,23 @@ public class IndexerBM25 extends Indexer{
         }
     }
 
-    protected void createTempFile(int file_number) {
-        //System.out.println("aa");
+    protected void createTempFile(int file_number, String final_file_name) {
+
+        if (inverted_index.isEmpty()){
+            return;
+        }
+
         try{
             String directory = "temp_files";
 
             Files.createDirectories(Paths.get(directory));
             //TODO: debaixo wont work pk iria tar smp a apagr os anteriores novos
-//
-//            // clear pre-existing files
-//            File my_dir = new File(directory);
-//
-//            FilenameFilter filter = (f1, name) -> name.endsWith(".txt");
-//
-//            String[] files_to_delete = my_dir.list(filter);
-//
-//            assert files_to_delete != null;
-//
-//            // clean files in directory
-//            for(String name_file : files_to_delete){
-//
-//                String path = directory + "/" + name_file;
-//
-//                if (!new File(path).delete()){
-//                    System.err.println("Error cleaning the directory " + directory);
-//                    System.exit(-1);
-//                }
-//            }
-//            System.out.println("Directory " + directory + " clear!");
 
-            FileWriter myWriter = new FileWriter("temp_files/temp_iindex_" + String.format("%02d", file_number) + ".txt");
+            FileWriter myWriter;
+            if (final_file_name.isEmpty())
+                myWriter = new FileWriter("temp_files/temp_iindex_" + String.format("%02d", file_number) + ".txt");
+            else
+                myWriter = new FileWriter("temp_files/" + final_file_name + ".txt");
 
             for(String token : inverted_index.keySet()){
                 /*
@@ -371,9 +377,10 @@ public class IndexerBM25 extends Indexer{
                 Df = Document Frequency = size of list associated the token
                 */
 //                myWriter.write(token + ":" + Math.log10( (double) N/inverted_index.get(token).size()) + ";");
-                myWriter.write(token + ";");
+                myWriter.write(token + (!final_file_name.isEmpty() ? ":" + Math.log10((double) N / inverted_index.get(token).size()) : "") + ";");
                 for(Post post: inverted_index.get(token)){
-                    myWriter.write(post.getDocument_id() + ":" + docs_len.get(post.getDocument_id()) + "-" + post.getFreqToken() + ":" + post.getTextPositions() + ";");
+                    myWriter.write(post.getDocument_id() + (!final_file_name.isEmpty() ? ":" + post.getWeight() : ":" + docs_len.get(post.getDocument_id()) + "-" + post.getFreqToken()) + ":" + post.getTextPositions() + ";");
+                    //myWriter.write(post.getDocument_id() + ":" + docs_len.get(post.getDocument_id()) + "-" + post.getFreqToken() + ":" + post.getTextPositions() + ";");
                 }
 
                 myWriter.write("\n");

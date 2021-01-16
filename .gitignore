@@ -81,3 +81,4 @@ resultsBM25.txt
 resultsTfIdf.txt
 temp_files/
 bm25_temp_tiles/
+index_split/
