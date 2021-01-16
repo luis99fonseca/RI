@@ -18,7 +18,7 @@ public class ResultsInformation {
         this.avg_precision = avg_precision;
         this.precision = precision;
         this.recall = recall;
-        this.f1 = (2*precision*recall) / (recall + precision);
+        this.f1 =  ((recall + precision) == 0) ? 0 : (2*precision*recall) / (recall + precision); // avoid NaN
         this.ndcg = ndcg;
     }
 

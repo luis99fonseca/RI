@@ -57,9 +57,7 @@ public class App {
 
 
         /* With Merge*/
-        //pipeline_indexer_tfidf_w_merge(csv_file, tokenizer, 500);
-
-        Searcher my_searcher = new Searcher(tokenizer, "index_split", 5000);
+        //pipeline_indexer_tfidf_w_merge(csv_file, tokenizer, 1000);
 
         /*
         *
@@ -79,7 +77,7 @@ public class App {
 //        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
 
         /* With Merge*/
-        Searcher s = new Searcher(tokenizer, "index_split", 5000);
+        Searcher s = new Searcher(tokenizer, "index_split", 1000);
 
         // Queries Solutions
         File my_file = new File("data/queries.relevance.filtered.txt");
@@ -152,6 +150,7 @@ public class App {
             for (String key : scores.keySet()) {
 
                 top_count++;
+
                 double relevance = queries_solutions.get(l + "").getOrDefault(key, 0);
 
                 if (top_count == 1){
@@ -171,15 +170,18 @@ public class App {
 
                 if (top_count == 10) {
                     double ndcg = check_division_by_zero(sum_dcg , ideal_dcg);
-                    results_rank10.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get(l + "").size(), ndcg));
+                    double avg_precision = check_division_by_zero(sum_precision, true_positives);
+                    results_rank10.put(l + "", new ResultsInformation(avg_precision, (double) true_positives / top_count, (double) true_positives / queries_solutions.get(l + "").size(), ndcg));
                 }
                 else if (top_count == 20) {
                     double ndcg = check_division_by_zero(sum_dcg , ideal_dcg);
-                    results_rank20.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get(l + "").size(), ndcg));
+                    double avg_precision = check_division_by_zero(sum_precision, true_positives);
+                    results_rank20.put(l + "", new ResultsInformation(avg_precision, (double) true_positives / top_count, (double) true_positives / queries_solutions.get(l + "").size(), ndcg));
                 }
                 else if (top_count == 50) {
                     double ndcg = check_division_by_zero(sum_dcg , ideal_dcg);
-                    results_rank50.put(l + "", new ResultsInformation(sum_precision / true_positives, (double) true_positives / top_count, (double) true_positives / queries_solutions.get(l + "").size(), ndcg));
+                    double avg_precision = check_division_by_zero(sum_precision, true_positives);
+                    results_rank50.put(l + "", new ResultsInformation(avg_precision, (double) true_positives / top_count, (double) true_positives / queries_solutions.get(l + "").size(), ndcg));
                     break;
                 }
             }
@@ -364,7 +366,7 @@ public class App {
 
         CorpusReader corpusReader = new CorpusReader(csv_file);
         Indexer indexer = new IndexerTfIdf(corpusReader, tokenizer);
-        String merge_file_name = "final_merge";
+        String merge_file_name = "last_merge";
 
         // indexing
         final long startTime = System.nanoTime();

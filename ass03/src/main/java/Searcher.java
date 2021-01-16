@@ -32,7 +32,6 @@ public class Searcher {
         double memoryUsed = (runtime.totalMemory() - runtime.freeMemory()) * Math.pow(10,-6);
 
         if (memoryUsed >= max_mbs){
-
             Map<String, Integer> sorted_freq_terms = sortMapByValueInteger(freq_terms_searched);
             Set<String> terms = sorted_freq_terms.keySet();
 
