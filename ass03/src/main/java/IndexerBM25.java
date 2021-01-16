@@ -166,12 +166,13 @@ public class IndexerBM25 extends Indexer{
     }
 
     @Override
-    public void mergeFiles() throws IOException {
+    public void mergeFiles(String last_file_name) throws IOException {
 
-        File f = new File("bm25_temp_files");
+        File f = new File("temp_files");
 
         // This filter will only include conditional files
-        FilenameFilter filter = (f1, name) -> name.startsWith("temp_iindex_") && name.endsWith(".txt");
+        FilenameFilter filter = (f1, name) -> (name.startsWith("temp_iindex_") || name.startsWith(last_file_name)) && name.endsWith(".txt");
+
 
         String[] actual_layer = f.list(filter);
 
@@ -211,8 +212,8 @@ public class IndexerBM25 extends Indexer{
             System.out.println("Merges this Loop: " + merges_this_loop + "; LastLayer= " + last_layer);
 
             for (int i = 0; i < merges_this_loop; i++) {
-                System.out.println("Adding: " + "bm25_temp_files/" + actual_layer[i]);
-                merging_files[i] = new File("bm25_temp_files/" + actual_layer[i]);
+                System.out.println("Adding: " + "temp_files/" + actual_layer[i]);
+                merging_files[i] = new File("temp_files/" + actual_layer[i]);
                 scanners[i] = new Scanner(merging_files[i]);
             }
 
@@ -229,7 +230,7 @@ public class IndexerBM25 extends Indexer{
             }
 
             boolean done = false;
-            FileWriter myWriter = new FileWriter("bm25_temp_files/temp_iindex_" + String.format("%02d", ++actual_file) + ".txt");
+            FileWriter myWriter = new FileWriter("temp_files/" + (last_layer ? last_file_name : ("temp_iindex_" + String.format("%02d", ++actual_file))) + ".txt");
 
             // merge process
             while (!done) {
@@ -318,11 +319,9 @@ public class IndexerBM25 extends Indexer{
                         myWriter.write("\n");
                     }
 
-                    System.out.println("FIM: " + calculateMemory() + "; i=" + initial_memory_used + "; diff: " + (calculateMemory() - initial_memory_used));
                     inverted_index.clear();
                     System.gc();
                     initial_memory_used = calculateMemory();
-                    System.out.println("FIM2: " + calculateMemory() + "; i=" + initial_memory_used + "; diff: " + (calculateMemory() - initial_memory_used));
                     total_lines_this_loop = 0;
 
                 }
@@ -345,9 +344,33 @@ public class IndexerBM25 extends Indexer{
     protected void createTempFile(int file_number) {
         //System.out.println("aa");
         try{
-            Files.createDirectories(Paths.get("bm25_temp_files")); //TODO. mudar pa temp_files, so ta assim pa development
+            String directory = "temp_files";
 
-            FileWriter myWriter = new FileWriter("bm25_temp_files/temp_iindex_" + String.format("%02d", file_number) + ".txt");
+            Files.createDirectories(Paths.get(directory));
+            //TODO: debaixo wont work pk iria tar smp a apagr os anteriores novos
+//
+//            // clear pre-existing files
+//            File my_dir = new File(directory);
+//
+//            FilenameFilter filter = (f1, name) -> name.endsWith(".txt");
+//
+//            String[] files_to_delete = my_dir.list(filter);
+//
+//            assert files_to_delete != null;
+//
+//            // clean files in directory
+//            for(String name_file : files_to_delete){
+//
+//                String path = directory + "/" + name_file;
+//
+//                if (!new File(path).delete()){
+//                    System.err.println("Error cleaning the directory " + directory);
+//                    System.exit(-1);
+//                }
+//            }
+//            System.out.println("Directory " + directory + " clear!");
+
+            FileWriter myWriter = new FileWriter("temp_files/temp_iindex_" + String.format("%02d", file_number) + ".txt");
 
             for(String token : inverted_index.keySet()){
                 /*

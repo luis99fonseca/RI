@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Searcher {
 
-    private Map<String, List<Post>> inverted_index;
+    private TreeMap<String, List<Post>> inverted_index = new TreeMap<>();
     private Map<String, Double> idfs = new TreeMap<>();
     private Tokenizer tokenizer;
     private String directory_name;
@@ -15,14 +15,12 @@ public class Searcher {
 
 
     public Searcher(String name_file, Tokenizer tokenizer){
-        inverted_index = new TreeMap<>();
         // load indexer
         loadIndexer(name_file);
         this.tokenizer = tokenizer;
     }
 
     public Searcher(Tokenizer tokenizer, String directory_name, double max_mbs){
-        inverted_index = new TreeMap<>();
         this.directory_name = directory_name;
         this.tokenizer = tokenizer;
         this.max_mbs = max_mbs;
@@ -52,6 +50,7 @@ public class Searcher {
 
                 count++;
             }
+            System.gc(); // free memory
         }
     }
 
@@ -130,6 +129,8 @@ public class Searcher {
 
                    if ((range_terms[0].compareTo(term) <= 0 && term.compareTo(range_terms[1]) <=0 ))
                        loadIndexer(directory_name + "/" + name_file);
+
+
                 }
             }
         }
@@ -138,7 +139,7 @@ public class Searcher {
 
     }
 
-    public Map<String, Double> searchingLncLtc(String input, int n_top_docs){
+    public Map<String, Double> searchingLncLtcWithoutPositions(String input, int n_top_docs){
 
         Map<String, Post> query = new LinkedHashMap<>();
 
