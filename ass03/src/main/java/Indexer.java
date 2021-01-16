@@ -30,7 +30,7 @@ public abstract class  Indexer {
     public abstract Map<String, List<Post>> processIndexWithPositions();
     public abstract Map<String, List<Post>> processIndexWithMerge();
 
-    public abstract void mergeFiles(String last_file_name) throws IOException;
+    public abstract void mergeFiles(String last_file_name, int memory_mb_max) throws IOException;
 
 
     protected int getStringIndex(String[] arr) {

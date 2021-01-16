@@ -166,7 +166,7 @@ public class IndexerBM25 extends Indexer{
     }
 
     @Override
-    public void mergeFiles(String last_file_name) throws IOException {
+    public void mergeFiles(String last_file_name, int memory_mb_max) throws IOException {
 
         File f = new File("temp_files");
 
@@ -186,9 +186,6 @@ public class IndexerBM25 extends Indexer{
 
         int actual_file = actual_layer.length;
 
-        // TODO: fazer com Memoria
-        int total_lines_this_loop = 0;
-        final int max_lines_per_loop = 250;
         double initial_memory_used = calculateMemory();
 
         File[] merging_files = new File[merges_at_the_time];
@@ -225,7 +222,6 @@ public class IndexerBM25 extends Indexer{
 
                     datum[i] = scanners[i].nextLine();
                     last_word[i] = datum[i].split(";")[0];
-                    total_lines_this_loop += 1;
                 }
             }
 
@@ -262,12 +258,11 @@ public class IndexerBM25 extends Indexer{
                 if (scanners[actual_small_index].hasNextLine()) {
                     datum[actual_small_index] = scanners[actual_small_index].nextLine();
                     last_word[actual_small_index] = datum[actual_small_index].split(";")[0];
-                    total_lines_this_loop += 1;
                 } else {
                     last_word[actual_small_index] = "";
                 }
                                                                         // 15 is a Off-set in MB, cause code inside usually adds about 15MB of more info
-                if ((calculateMemory() - initial_memory_used) > (128 - 15) || docsDoNotHaveNextLine(scanners, merges_this_loop)) {
+                if ((calculateMemory() - initial_memory_used) > (memory_mb_max - 15) || docsDoNotHaveNextLine(scanners, merges_this_loop)) {
                     if (docsDoNotHaveNextLine(scanners, merges_this_loop)) {
                         // while there are non empty last_words, aka clear all streams that still have a last term
                         while (Arrays.stream(last_word).filter(item -> !item.isEmpty()).min(String::compareTo).isPresent()) {
@@ -322,8 +317,6 @@ public class IndexerBM25 extends Indexer{
                     inverted_index.clear();
                     System.gc();
                     initial_memory_used = calculateMemory();
-                    total_lines_this_loop = 0;
-
                 }
             }
 

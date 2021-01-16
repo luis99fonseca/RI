@@ -40,7 +40,7 @@ public class App {
             stop_words_file = args[1];
         }
 
-        // (Un)comment to choose Tokenizer
+        // CHANGE to choose Tokenizer
         //Tokenizer tokenizer = new ImprovedTokenizer(stop_words_file);
         Tokenizer tokenizer = new SimpleTokenizer();
 
@@ -48,7 +48,6 @@ public class App {
         double k = 1.2;
 
         /* Without Merge (From Project02)*/
-
 //        pipeline_indexer_tfidf(csv_file, tokenizer);                  // (writes to a file (needed for the statistics part))
 //        pipeline_searching_tfidf(tokenizer, "coronavirus origin", 50);
 
@@ -58,7 +57,7 @@ public class App {
 
         /* With Merge*/
         //pipeline_indexer_tfidf_w_merge(csv_file, tokenizer, 1000);
-        //pipeline_indexer_bm25_w_merge(csv_file, tokenizer, b, k, 1000);
+//        pipeline_indexer_bm25_w_merge(csv_file, tokenizer, b, k, 1000);
 
         /*
         *
@@ -66,14 +65,13 @@ public class App {
         *
         */
 
-        // toggle statistic calculation
+        // CHANGE statistic calculation
         if(false)
             System.exit(-1);
 
-        /*  Search
-        *   Without Merge        */
-
-        // Change in accordance to the file name
+        /*  Search (CHANGE) */
+        /*   Without Merge  (from project02)      */
+        // CHANGE in accordance to the file name
         //Searcher s = new Searcher("resultsTfIdf.txt", tokenizer);
 //        Searcher s = new Searcher("resultsBM25.txt", tokenizer);
 
@@ -374,7 +372,7 @@ public class App {
         final long startTime = System.nanoTime();
 
         indexer.processIndexWithMerge(); // todo: por com max memory na msm
-        indexer.mergeFiles(merge_file_name);
+        indexer.mergeFiles(merge_file_name, memory_mb_max);
         indexer.splitMergedFile(merge_file_name , memory_mb_max);
 
         final long endTime = System.nanoTime();
@@ -407,7 +405,7 @@ public class App {
         // indexing
         final long startTime = System.nanoTime();
         indexer.processIndexWithMerge();
-        indexer.mergeFiles(merge_file_name);
+        indexer.mergeFiles(merge_file_name, memory_mb_max);
         indexer.splitMergedFile(merge_file_name , memory_mb_max);
         final long endTime = System.nanoTime();
 
