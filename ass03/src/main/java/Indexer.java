@@ -145,32 +145,9 @@ public abstract class  Indexer {
     public void splitMergedFile(String file_name, int memory_mb_max){
 
         try {
-            // TODO: ver se ta bem :)
             String directory = "index_split";
             clearTempFilesDirectory(directory);
-
-//
-//            Files.createDirectories(Paths.get(directory));
-//
-//            File my_dir = new File(directory);
-//
-//            FilenameFilter filter = (f1, name) -> name.endsWith(".txt");
-//
-//            String[] files_to_delete = my_dir.list(filter);
-//
-//            assert files_to_delete != null;
-//
-//            // clean files in directory
-//            for(String name_file : files_to_delete){
-//
-//                String path = directory + "/" + name_file;
-//
-//                if (!new File(path).delete())
-//                    System.out.println("Error cleaning the directory " + directory);
-//
-//            }
-//            System.out.println("Directory " + directory + " clean");
-
+            
             File myFile = new File("temp_files/" +file_name + ".txt");
             Scanner myReader = new Scanner(myFile);
             boolean with_positions = false;

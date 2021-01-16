@@ -185,7 +185,7 @@ public class Searcher {
         return sortMapByValue(scores, n_top_docs);
     }
 
-    public Map<String, Double> searchingLncLtcWithPositions(String input, int n_top_docs, double match_score,
+    public Map<String, Double> searchingLncLtcWithPositions(String input, int n_top_docs, boolean boost, double match_score,
                                                             int margin_window_error, double penalization_score){
 
         Map<String, Post> query = new LinkedHashMap<>();
@@ -229,11 +229,13 @@ public class Searcher {
                 }
             }
         }
-        Map<String, Double> docs_boost = boostRankWithPositions(query, match_score, margin_window_error, penalization_score);
 
-        // TODO: maybe need function to smooth the results | check if doc_boost exist in scores
-        for(String doc_id : docs_boost.keySet())
-            scores.put(doc_id, scores.get(doc_id) + Math.log10(docs_boost.get(doc_id)));
+        if(boost){
+            Map<String, Double> docs_boost = boostRankWithPositions(query, match_score, margin_window_error, penalization_score);
+
+            for(String doc_id : docs_boost.keySet())
+                scores.put(doc_id, scores.get(doc_id) + Math.log10(docs_boost.get(doc_id)));
+        }
 
         return sortMapByValue(scores, n_top_docs);
     }
@@ -264,7 +266,7 @@ public class Searcher {
         return sortMapByValue(scores, n_top_docs);
     }
 
-    public Map<String, Double> searchingBM25WithPositions(String input, int n_top_docs, double match_score,
+    public Map<String, Double> searchingBM25WithPositions(String input, int n_top_docs, boolean boost, double match_score,
                                                           int margin_window_error, double penalization_score){
 
         Map<String, Double> scores = new HashMap<>();
@@ -292,16 +294,13 @@ public class Searcher {
             }
         }
 
-        Map<String, Double> docs_boost = boostRankWithPositions(query, match_score, margin_window_error, penalization_score);
+        if(boost){
+            Map<String, Double> docs_boost = boostRankWithPositions(query, match_score, margin_window_error, penalization_score);
 
-        //System.out.println("Query : " + query);
-        //System.out.println("Sem ");
-        //System.out.println(sortMapByValue(scores, n_top_docs));
-        //System.out.println("POsitiomns");
+            for(String doc_id : docs_boost.keySet())
+                scores.put(doc_id, scores.get(doc_id) + Math.log10(docs_boost.get(doc_id)));
+        }
 
-        // TODO: maybe need function to smooth the results | check if doc_boost exist in scores
-        for(String doc_id : docs_boost.keySet())
-            scores.put(doc_id, scores.get(doc_id) + Math.log10(docs_boost.get(doc_id)));
 
         //System.out.println(sortMapByValue(scores, n_top_docs));
         return sortMapByValue(scores, n_top_docs);

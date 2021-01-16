@@ -135,11 +135,17 @@ public class App {
             // Query latency
             final long startTime = System.nanoTime();
 
+<<<<<<< HEAD
             // CHANGE according to file read
+=======
+            // change according to file read
+            boolean with_boost = true;
+            
+>>>>>>> 2becc51e0b73a697dfcf916ad2e8a50cd4e01557
             //Map<String, Double> scores = searchingLncLtcWithoutPositions(query, n_top_docs);
             //Map<String, Double> scores = searchingBM25WithoutPositions(query, n_top_docs)
-            Map<String, Double> scores = s.searchingBM25WithPositions(query, n_top_docs, 500, 5, 0);
-            //Map<String, Double> scores = s.searchingLncLtcWithPositions(query, n_top_docs, 100, 2, 5);
+            //Map<String, Double> scores = s.searchingBM25WithPositions(query, n_top_docs, with_boost, 500, 5, 50);
+            Map<String, Double> scores = s.searchingLncLtcWithPositions(query, n_top_docs, with_boost,  100, 2, 5);
             query_latency[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 6));
 
             // DCG perfect ranking order
@@ -366,7 +372,7 @@ public class App {
 
         CorpusReader corpusReader = new CorpusReader(csv_file);
         Indexer indexer = new IndexerTfIdf(corpusReader, tokenizer);
-        String merge_file_name = "last_merge";
+        String merge_file_name = "final_merge_tfidf";
 
         // indexing
         final long startTime = System.nanoTime();
