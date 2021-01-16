@@ -58,6 +58,7 @@ public class App {
 
         /* With Merge*/
         //pipeline_indexer_tfidf_w_merge(csv_file, tokenizer, 1000);
+        //pipeline_indexer_bm25_w_merge(csv_file, tokenizer, b, k, 1000);
 
         /*
         *
@@ -137,9 +138,10 @@ public class App {
             final long startTime = System.nanoTime();
 
             // change according to file read
-            //Map<String, Double> scores = s.searchingLncLtc(query, n_top_docs);
-            //Map<String, Double> scores = s.searchingBM25WithPositions(query, n_top_docs, 500, 4, 50);
-            Map<String, Double> scores = s.searchingLncLtcWithPositions(query, n_top_docs, 100, 2, 5);
+            //Map<String, Double> scores = searchingLncLtcWithoutPositions(query, n_top_docs);
+            //Map<String, Double> scores = searchingBM25WithoutPositions(query, n_top_docs)
+            Map<String, Double> scores = s.searchingBM25WithPositions(query, n_top_docs, 500, 5, 0);
+            //Map<String, Double> scores = s.searchingLncLtcWithPositions(query, n_top_docs, 100, 2, 5);
             query_latency[l - 1] = (System.nanoTime() - startTime) / (Math.pow(10, 6));
 
             // DCG perfect ranking order
@@ -371,7 +373,7 @@ public class App {
         // indexing
         final long startTime = System.nanoTime();
 
-        indexer.processIndexWithMerge();
+        indexer.processIndexWithMerge(); // todo: por com max memory na msm
         indexer.mergeFiles(merge_file_name);
         indexer.splitMergedFile(merge_file_name , memory_mb_max);
 
@@ -395,8 +397,21 @@ public class App {
 
         System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + " seconds;" );
         System.exit(-1);
-        // write in file the inverted index
-        indexer.writeInFileWithPositions("resultsBM25.txt");
+    }
+
+    public static void pipeline_indexer_bm25_w_merge(String csv_file, Tokenizer tokenizer ,double b, double k, int memory_mb_max) throws IOException {
+        CorpusReader corpusReader = new CorpusReader(csv_file);
+        Indexer indexer = new IndexerBM25(corpusReader, tokenizer, k, b);
+        String merge_file_name = "final_merge_bm25";
+
+        // indexing
+        final long startTime = System.nanoTime();
+        indexer.processIndexWithMerge();
+        indexer.mergeFiles(merge_file_name);
+        indexer.splitMergedFile(merge_file_name , memory_mb_max);
+        final long endTime = System.nanoTime();
+
+        System.out.println( "Time to indexing: " + (endTime - startTime) / Math.pow(10,9) + " seconds;" );
     }
 
     public static void pipeline_searching_tfidf(Tokenizer tokenizer, String input, int n_top_docs) throws FileNotFoundException {
@@ -423,7 +438,7 @@ public class App {
         Searcher s = new Searcher("resultsBM25.txt", tokenizer);
 
         final long startTime = System.nanoTime();
-        Map<String, Double> scores =  s.searchingBM25(input, n_top_docs);
+        Map<String, Double> scores =  s.searchingBM25WithoutPositions(input, n_top_docs);
         final long endTime = System.nanoTime();
 
         System.out.println("BM25");

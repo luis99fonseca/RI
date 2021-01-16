@@ -239,7 +239,7 @@ public class Searcher {
     }
 
 
-    public Map<String, Double> searchingBM25(String input, int n_top_docs){
+    public Map<String, Double> searchingBM25WithoutPositions(String input, int n_top_docs){
 
         Map<String, Double> scores = new HashMap<>();
 
@@ -294,16 +294,16 @@ public class Searcher {
 
         Map<String, Double> docs_boost = boostRankWithPositions(query, match_score, margin_window_error, penalization_score);
 
-        System.out.println("Query : " + query);
-        System.out.println("Sem ");
-        System.out.println(sortMapByValue(scores, n_top_docs));
-        System.out.println("POsitiomns");
+        //System.out.println("Query : " + query);
+        //System.out.println("Sem ");
+        //System.out.println(sortMapByValue(scores, n_top_docs));
+        //System.out.println("POsitiomns");
 
         // TODO: maybe need function to smooth the results | check if doc_boost exist in scores
         for(String doc_id : docs_boost.keySet())
             scores.put(doc_id, scores.get(doc_id) + Math.log10(docs_boost.get(doc_id)));
 
-        System.out.println(sortMapByValue(scores, n_top_docs));
+        //System.out.println(sortMapByValue(scores, n_top_docs));
         return sortMapByValue(scores, n_top_docs);
     }
 

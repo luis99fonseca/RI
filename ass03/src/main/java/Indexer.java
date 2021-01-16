@@ -32,6 +32,26 @@ public abstract class  Indexer {
 
     public abstract void mergeFiles(String last_file_name) throws IOException;
 
+
+    protected int getStringIndex(String[] arr) {
+        String smallest = Arrays.stream(arr).filter(item -> !item.isEmpty()).min(String::compareTo).orElse(null);
+        for (int l = 0; l < arr.length; l++) {
+            if (arr[l].equals(smallest)) {
+                return l;
+            }
+        }
+        return 0;
+    }
+
+    protected boolean docsDoNotHaveNextLine(Scanner[] scanners, int merges_this_loop) {
+        for (int i = 0; i < merges_this_loop; i++){
+            if (scanners[i].hasNextLine()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void countingTotalWeight(Post post){
         String doc_id = post.getDocument_id();
 
