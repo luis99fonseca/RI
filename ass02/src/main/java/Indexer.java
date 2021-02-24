@@ -54,7 +54,7 @@ public abstract class  Indexer {
                 myWriter.write(token + ":" + Math.log10( (double) N/inverted_index.get(token).size()) + ";");
 
                 for(Post post: inverted_index.get(token)){
-                    myWriter.write(post.getDocument_id() + ":" + post.getWeight()+";");
+                    myWriter.write(post.getDocument_id() + ":" + post.getWeight()+":" + post.getTextPositions() + ";");
                 }
 
                 myWriter.write("\n");
